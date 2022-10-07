@@ -15,6 +15,7 @@ class WilfireModel():
     def startSim(self):
         #init fire
         self.fireMap[int(self.n/2)][int(self.m/2)] = 1
+        print(self.fireMap)
         while True:
             self.spread()
             print(self.fireMap)
@@ -26,12 +27,16 @@ class WilfireModel():
                     for i in range(row_number-1-radius, row_number+radius)]
 
     def spread(self):
+        spread = []
         for i, row in enumerate(self.fireMap):
             for j, cell in enumerate(row):
-                matrix = np.matrix(self.neighbors( 1, i, j))
+                matrix = np.matrix(self.neighbors( 1, i+1, j+1))
                 if cell == 0 and matrix.sum() > 0:
                     if random.random() + self.spreadMap[i][j] > 1.0:
-                        self.fireMap[i][j] = 1
+                        print(chr(27) + "[2J")
+                        spread.append((i,j))
+        for pair in spread:
+            self.fireMap[pair[0]][pair[1]] = 1
 
     
     def isFireInNeighbours(self, rowIndex, colIndex):
