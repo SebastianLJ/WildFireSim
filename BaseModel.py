@@ -9,7 +9,9 @@ class WilfireModel():
         self.seed = seed
         np.random.seed(self.seed)
         random.seed(self.seed)
+        # map of likelyhood of spread represented by a spread coefficient
         self.spreadMap = np.array(np.random.rand(self.n, self.m))
+        # map of active fire represented by 0 or 1
         self.fireMap = np.zeros((self.n,self.m), dtype=int)
 
     def startSim(self):
@@ -24,9 +26,10 @@ class WilfireModel():
             time.sleep(1)
 
     def neighbors(self, radius, row_number, column_number):
-     return [[self.fireMap[i][j] if  i >= 0 and i < len(self.fireMap) and j >= 0 and j < len(self.fireMap[0]) else 0
-                for j in range(column_number-1-radius, column_number+radius)]
-                    for i in range(row_number-1-radius, row_number+radius)]
+        # returns matrix containing neighbours
+        return [[self.fireMap[i][j] if  i >= 0 and i < len(self.fireMap) and j >= 0 and j < len(self.fireMap[0]) else 0
+            for j in range(column_number-1-radius, column_number+radius)]
+                for i in range(row_number-1-radius, row_number+radius)]
 
     def spread(self):
         spread = []
