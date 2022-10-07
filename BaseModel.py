@@ -9,7 +9,7 @@ class WilfireModel():
         self.seed = seed
         np.random.seed(self.seed)
         random.seed(self.seed)
-        self.spreadMap = np.random.rand(self.n, self.m)
+        self.spreadMap = np.array(np.random.rand(self.n, self.m))
         self.fireMap = np.zeros((self.n,self.m), dtype=int)
 
     def startSim(self):
@@ -18,6 +18,8 @@ class WilfireModel():
         print(self.fireMap)
         while True:
             self.spread()
+            print(chr(27) + "[2J")
+            print(self.spreadMap)
             print(self.fireMap)
             time.sleep(1)
 
@@ -33,7 +35,6 @@ class WilfireModel():
                 matrix = np.matrix(self.neighbors( 1, i+1, j+1))
                 if cell == 0 and matrix.sum() > 0:
                     if random.random() + self.spreadMap[i][j] > 1.0:
-                        print(chr(27) + "[2J")
                         spread.append((i,j))
         for pair in spread:
             self.fireMap[pair[0]][pair[1]] = 1
