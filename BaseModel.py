@@ -41,14 +41,3 @@ class WilfireModel():
                         spread.append((i,j))
         for pair in spread:
             self.fireMap[pair[0]][pair[1]] = 1
-
-    
-    def isFireInNeighbours(self, rowIndex, colIndex):
-        return (self.fireMap[rowIndex-1][colIndex] + 
-                self.fireMap[rowIndex+1][colIndex] + 
-                self.fireMap[rowIndex][colIndex-1] + 
-                self.fireMap[rowIndex][colIndex+1] +
-                self.fireMap[rowIndex-1][colIndex-1] +
-                self.fireMap[rowIndex-1][colIndex+1] +
-                self.fireMap[rowIndex+1][colIndex-1] +
-                self.fireMap[rowIndex+1][colIndex+1] > 0)
