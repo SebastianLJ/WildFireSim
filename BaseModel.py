@@ -13,6 +13,7 @@ class WilfireModel():
         self.spreadMap = np.array(np.random.rand(self.n, self.m))
         # map of active fire represented by 0 or 1
         self.fireMap = np.zeros((self.n,self.m), dtype=int)
+        np.set_printoptions(threshold=np.inf)
 
     def startSim(self):
         #init fire
@@ -21,7 +22,6 @@ class WilfireModel():
         while True:
             self.spread()
             print(chr(27) + "[2J")
-            print(self.spreadMap)
             print(self.fireMap)
             time.sleep(1)
 

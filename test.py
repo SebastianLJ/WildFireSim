@@ -1,5 +1,5 @@
 from BaseModel import WilfireModel
 
-model = WilfireModel(10,10,12)
+model = WilfireModel(30,30,12)
 
 model.startSim()
