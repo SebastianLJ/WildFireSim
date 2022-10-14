@@ -3,14 +3,11 @@ import matplotlib.pyplot as plt
 from matplotlib import animation
 from matplotlib import colors
 
-model = WilfireModel(100,100,12)
+model = WilfireModel(100,100,50)
 
-def getColor(model):
-    return (0, 1, 0, 0.5)
-
-colors_list = [getColor(model), 'brown', 'orange']
+colors_list = [(0.2,0.2,0),'green', 'brown', 'orange']
 cmap = colors.ListedColormap(colors_list)
-bounds = [0,1,2]
+bounds = [-1,0,1,2]
 norm = colors.BoundaryNorm(bounds, cmap.N)
 
 fig = plt.figure(figsize=(25/3, 6.25))
@@ -27,7 +24,7 @@ def animate(i):
 animate.X = model.fireMap
 
 # Interval between frames (ms).
-interval = 200
+interval = 50
 model.fireMap[int(model.n/2)][int(model.m/2)] = 1
 anim = animation.FuncAnimation(fig, animate, interval=interval, frames=200)
 #anim.save("forest_fire.mp4")

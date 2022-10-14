@@ -37,7 +37,11 @@ class WilfireModel():
             for j, cell in enumerate(row):
                 matrix = np.matrix(self.neighbors( 1, i+1, j+1))
                 if cell == 0 and matrix.sum() > 0:
-                    if random.random() + self.spreadMap[i][j] > 1.0:
+                    if random.random() + self.spreadMap[i][j] >= 1.0:
                         spread.append((i,j))
+                elif cell == 1:
+                    if (self.spreadMap[i][j] < 0.3):
+                        self.fireMap[i][j] = -1
+                    self.spreadMap[i][j] = self.spreadMap[i][j]/2
         for pair in spread:
             self.fireMap[pair[0]][pair[1]] = 1
