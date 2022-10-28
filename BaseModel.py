@@ -3,6 +3,7 @@ import random
 import time
 
 class WilfireModel():
+    NONE, N, NE, E, SE, S, SW, W, NW = range(9)
     def __init__(self, n, m, seed):
         self.n = n
         self.m = m
@@ -42,6 +43,6 @@ class WilfireModel():
                 elif cell == 1:
                     if (self.spreadMap[i][j] < 0.3):
                         self.fireMap[i][j] = -1
-                    self.spreadMap[i][j] = self.spreadMap[i][j]/2
+                    self.spreadMap[i][j] = self.spreadMap[i][j]*0.75
         for pair in spread:
             self.fireMap[pair[0]][pair[1]] = 1
