@@ -11,10 +11,21 @@ class WilfireModel():
         np.random.seed(self.seed)
         random.seed(self.seed)
         # map of likelyhood of spread represented by a spread coefficient
-        self.spreadMap = np.array(np.random.rand(self.n, self.m))
+        # self.spreadMap = np.array(np.random.rand(self.n, self.m))
+        self.generateForests()
         # map of active fire represented by 0 or 1
         self.fireMap = np.zeros((self.n,self.m), dtype=int)
         np.set_printoptions(threshold=np.inf)
+
+    def generateForests(self):
+        # generate forest
+        self.spreadMap = np.array(np.random.rand(self.n, self.m))
+        for i in range(self.n):
+            for j in range(self.m):
+                if self.spreadMap[i][j] < 0.2:
+                    self.spreadMap[i][j] = 0
+                else:
+                    pass
 
     def startSim(self):
         #init fire
@@ -43,6 +54,6 @@ class WilfireModel():
                 elif cell == 1:
                     if (self.spreadMap[i][j] < 0.3):
                         self.fireMap[i][j] = -1
-                    self.spreadMap[i][j] = self.spreadMap[i][j]*0.75
+                    self.spreadMap[i][j] = self.spreadMap[i][j]*0.8
         for pair in spread:
             self.fireMap[pair[0]][pair[1]] = 1
