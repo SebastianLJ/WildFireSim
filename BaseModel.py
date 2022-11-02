@@ -11,7 +11,7 @@ class WilfireModel():
         np.random.seed(self.seed)
         random.seed(self.seed)
         # map of likelyhood of spread represented by a spread coefficient
-        # self.spreadMap = np.array(np.random.rand(self.n, self.m))
+        self.spreadMap = np.array(np.random.rand(self.n, self.m))
         self.generateForests()
         # map of active fire represented by 0 or 1
         self.fireMap = np.zeros((self.n,self.m), dtype=int)
@@ -19,13 +19,35 @@ class WilfireModel():
 
     def generateForests(self):
         # generate forest
-        self.spreadMap = np.array(np.random.rand(self.n, self.m))
-        for i in range(self.n):
-            for j in range(self.m):
-                if self.spreadMap[i][j] < 0.2:
-                    self.spreadMap[i][j] = 0
-                else:
-                    pass
+        num_forests = random.randrange(1,10)
+        for i in range(0,num_forests):
+            a, b = random.randrange(0,self.n), random.randrange(0,self.m)
+            self.spreadMap[a][b] = 1
+            size = random.randrange(20,self.n*self.m/4)
+            self.expandForest(a,b,size)
+            
+    def expandForest(self, a, b, size):
+        if (size > 0):
+            if(a < self.n and b < self.m):
+                self.spreadMap[a][b] = 1
+            direction = random.randrange(0,8)
+            if direction == self.N:
+                self.expandForest(a-1,b,size-1)
+            elif direction == self.NE:
+                self.expandForest(a-1,b+1,size-1)
+            elif direction == self.E:
+                self.expandForest(a,b+1,size-1)
+            elif direction == self.SE:
+                self.expandForest(a+1,b+1,size-1)
+            elif direction == self.S:
+                self.expandForest(a+1,b,size-1)
+            elif direction == self.SW:
+                self.expandForest(a+1,b-1,size-1)
+            elif direction == self.W:
+                self.expandForest(a,b-1,size-1)
+            elif direction == self.NW:
+                self.expandForest(a-1,b-1,size-1)
+
 
     def startSim(self):
         #init fire
@@ -40,6 +62,12 @@ class WilfireModel():
     def neighbors(self, radius, row_number, column_number):
         # returns matrix containing neighbours
         return [[self.fireMap[i][j] if  i >= 0 and i < len(self.fireMap) and j >= 0 and j < len(self.fireMap[0]) else 0
+            for j in range(column_number-1-radius, column_number+radius)]
+                for i in range(row_number-1-radius, row_number+radius)]
+
+    def neighbors_spread(self, radius, row_number, column_number):
+        # returns matrix containing neighbours
+        return [[self.spreadMap[i][j] if  i >= 0 and i < len(self.spreadMap) and j >= 0 and j < len(self.spreadMap[0]) else 0
             for j in range(column_number-1-radius, column_number+radius)]
                 for i in range(row_number-1-radius, row_number+radius)]
 
