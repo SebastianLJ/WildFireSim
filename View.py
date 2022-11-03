@@ -1,5 +1,3 @@
-import matplotlib as mpl
-import numpy as np
 from BaseModel import WilfireModel
 import matplotlib.pyplot as plt
 from matplotlib import animation
@@ -20,7 +18,7 @@ im = ax.imshow(model.fireMap, cmap=cmap, norm=norm)#, interpolation='nearest')
 def animate(i):
     im.set_data(animate.X)
     model.spread()
-    animate.X = model.spreadMap
+    animate.X = model.fireMap
 # Bind our grid to the identifier X in the animate function's namespace.
 animate.X = model.fireMap
 
