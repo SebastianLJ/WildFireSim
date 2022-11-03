@@ -50,7 +50,6 @@ class WilfireModel():
             elif direction == self.NW:
                 self.expandForest(a-1,b-1,size-1)
 
-
     def startSim(self):
         #init fire
         self.fireMap[int(self.n/2)][int(self.m/2)] = 1
@@ -74,44 +73,47 @@ class WilfireModel():
                 for i in range(row_number-1-radius, row_number+radius)]
 
     def get_direction(self, i,j):
-        if i == -1 and j == 0:
-            return self.N
-        elif i == -1 and j == 1:
-            return self.NE
-        elif i == 0 and j == 1:
-            return self.E
-        elif i == 1 and j == 1:
-            return self.SE
-        elif i == 1 and j == 0:
+        if i < 0 and j == 0:
             return self.S
-        elif i == 1 and j == -1:
+        elif i < 0 and j > 0:
             return self.SW
-        elif i == 0 and j == -1:
+        elif i == 0 and j > 0:
             return self.W
-        elif i == -1 and j == -1:
+        elif i > 0 and j > 0:
             return self.NW
+        elif i > 0 and j == 0:
+            return self.N
+        elif i > 0 and j < 0:
+            return self.NE
+        elif i == 0 and j < 0:
+            return self.E
+        elif i < 0 and j < 0:
+            return self.SE
         else:
             return self.NONE
 
     def wind_coefficient(self, x, y):
         if self.windDirection != self.NONE and self.windDirection == self.get_direction(x,y):
-            return 2
+            return 4
         else:
-            return 0.8
+            return 1.5
 
     def get_neighbour_spread_risk(self, neighbors):
+        highest_wind = 1
         for i in range(0, len(neighbors)):
-            for j in range(0, len(neighbors[0])):
+            for j in range(0, len(neighbors[i])):
                 if neighbors[i][j] == 1:
-                    return self.wind_coefficient(i+1,j+1) * self.spreadMap[i][j]
+                    if self.wind_coefficient(i-1,j-1) > highest_wind:
+                        highest_wind = self.wind_coefficient(i-1,j-1)
+        return highest_wind
 
     def spread(self):
         spread = []
         for i, row in enumerate(self.fireMap):
             for j, cell in enumerate(row):
-                matrix = np.matrix(self.neighbors( 1, i+1, j+1))
+                matrix = np.matrix(self.neighbors(1, i+1, j+1))
                 if cell == 0 and matrix.sum() > 0:
-                    if (random.random() + self.get_neighbour_spread_risk(self.neighbors(1, i+1, j+1))) >= 1.0:
+                    if (self.spreadMap[i][j]*self.get_neighbour_spread_risk(self.neighbors(1, i+1, j+1))) >= 1.0:
                         spread.append((i,j))
                 elif cell == 1:
                     if (self.spreadMap[i][j] < 0.3):
