@@ -11,7 +11,9 @@ class WilfireModel():
         np.random.seed(self.seed)
         random.seed(self.seed)
         self.windDirection = random.randrange(0,8)
+        self.windSpeed = 4
         print("Wind direction: ", self.windDirection)
+        print("Wind speed: ", self.windSpeed)
         # map of likelyhood of spread represented by a spread coefficient
         self.spreadMap = np.array(np.random.rand(self.n, self.m))
         self.generateForests()
