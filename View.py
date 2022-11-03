@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib import animation
 from matplotlib import colors
 
-model = WilfireModel(100,100,1)
+model = WilfireModel(100,100,5)
 
 colors_list = [(0.2,0.2,0),'green', 'brown', 'orange']
 cmap = colors.ListedColormap(colors_list)

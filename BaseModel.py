@@ -10,6 +10,8 @@ class WilfireModel():
         self.seed = seed
         np.random.seed(self.seed)
         random.seed(self.seed)
+        self.windDirection = random.randrange(0,8)
+        print("Wind direction: ", self.windDirection)
         # map of likelyhood of spread represented by a spread coefficient
         self.spreadMap = np.array(np.random.rand(self.n, self.m))
         self.generateForests()
@@ -71,13 +73,45 @@ class WilfireModel():
             for j in range(column_number-1-radius, column_number+radius)]
                 for i in range(row_number-1-radius, row_number+radius)]
 
+    def get_direction(self, i,j):
+        if i == -1 and j == 0:
+            return self.N
+        elif i == -1 and j == 1:
+            return self.NE
+        elif i == 0 and j == 1:
+            return self.E
+        elif i == 1 and j == 1:
+            return self.SE
+        elif i == 1 and j == 0:
+            return self.S
+        elif i == 1 and j == -1:
+            return self.SW
+        elif i == 0 and j == -1:
+            return self.W
+        elif i == -1 and j == -1:
+            return self.NW
+        else:
+            return self.NONE
+
+    def wind_coefficient(self, x, y):
+        if self.windDirection != self.NONE and self.windDirection == self.get_direction(x,y):
+            return 2
+        else:
+            return 0.8
+
+    def get_neighbour_spread_risk(self, neighbors):
+        for i in range(0, len(neighbors)):
+            for j in range(0, len(neighbors[0])):
+                if neighbors[i][j] == 1:
+                    return self.wind_coefficient(i+1,j+1) * self.spreadMap[i][j]
+
     def spread(self):
         spread = []
         for i, row in enumerate(self.fireMap):
             for j, cell in enumerate(row):
                 matrix = np.matrix(self.neighbors( 1, i+1, j+1))
                 if cell == 0 and matrix.sum() > 0:
-                    if random.random() + self.spreadMap[i][j] >= 1.0:
+                    if (random.random() + self.get_neighbour_spread_risk(self.neighbors(1, i+1, j+1))) >= 1.0:
                         spread.append((i,j))
                 elif cell == 1:
                     if (self.spreadMap[i][j] < 0.3):
