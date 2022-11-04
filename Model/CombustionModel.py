@@ -21,8 +21,11 @@ class CombustionModel():
         
     
     def generate_spread_map(self):
-        self.spreadMap = np.array(np.random.rand(self.n, self.m))
-        return
+        self.spreadMap = np.zeros((self.n,self.m), dtype=int)
+        for i in range(0, len(self.spreadMap)):
+            for j in range(0, len(self.spreadMap[i])):
+                self.spreadMap[i][j] = self.EcoModel.get_spread(self.TerrainMap[i][j]) * self.WindModel.windSpeed
+
 
     def spread(self):
         return
