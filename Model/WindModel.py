@@ -10,7 +10,9 @@ class WindModel():
         np.random.seed(self.seed)
         random.seed(self.seed)
         self.windDirection = random.randrange(0,8)
+        self.windSpeed = random.randrange(1,8)
         print("Wind direction: ", self.windDirection)
+        print("Wind speed: ", self.windSpeed)
 
     def get_direction(self, i,j):
         if i < 0 and j == 0:
@@ -32,8 +34,8 @@ class WindModel():
         else:
             return self.NONE
 
-    def wind_coefficient(self, x, y):
+    def get_wind_coefficient(self, x, y):
         if self.windDirection != self.NONE and self.windDirection == self.get_direction(x,y):
-            return 5
+            return self.windSpeed
         else:
-            return 1.5
+            return 1
