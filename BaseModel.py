@@ -14,41 +14,9 @@ class WilfireModel():
         print("Wind direction: ", self.windDirection)
         # map of likelyhood of spread represented by a spread coefficient
         self.spreadMap = np.array(np.random.rand(self.n, self.m))
-        self.generateForests()
         # map of active fire represented by 0 or 1
         self.fireMap = np.zeros((self.n,self.m), dtype=int)
         np.set_printoptions(threshold=np.inf)
-
-    def generateForests(self):
-        # generate forest
-        num_forests = random.randrange(1,10)
-        for i in range(0,num_forests):
-            a, b = random.randrange(0,self.n), random.randrange(0,self.m)
-            self.spreadMap[a][b] = 1
-            size = random.randrange(20,self.n*self.m/4)
-            self.expandForest(a,b,size)
-            
-    def expandForest(self, a, b, size):
-        if (size > 0):
-            if(a < self.n and b < self.m):
-                self.spreadMap[a][b] = 1
-            direction = random.randrange(0,8)
-            if direction == self.N:
-                self.expandForest(a-1,b,size-1)
-            elif direction == self.NE:
-                self.expandForest(a-1,b+1,size-1)
-            elif direction == self.E:
-                self.expandForest(a,b+1,size-1)
-            elif direction == self.SE:
-                self.expandForest(a+1,b+1,size-1)
-            elif direction == self.S:
-                self.expandForest(a+1,b,size-1)
-            elif direction == self.SW:
-                self.expandForest(a+1,b-1,size-1)
-            elif direction == self.W:
-                self.expandForest(a,b-1,size-1)
-            elif direction == self.NW:
-                self.expandForest(a-1,b-1,size-1)
 
     def startSim(self):
         #init fire
