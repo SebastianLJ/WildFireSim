@@ -40,7 +40,7 @@ class DroneModel():
         
     
     def move(self, n,m, posy, posx):
-        #for each drone move it down by 1
+        #for each drone move it down by 1 until it has moved a distance of moveRange
         for j in range(self.droneNumber):
             ypos = self.dronePositions[j][0]
             xpos = self.dronePositions[j][1]
