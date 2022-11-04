@@ -30,6 +30,9 @@ class CombustionModel():
     def spread(self):
         return
 
+    def get_neighbourhood_with_wind(self, row_number, column_number, map):
+        return
+
     def get_neighbourhood(self, radius, row_number, column_number, map):
         return [[map[i][j] if  i >= 0 and i < len(map) and j >= 0 and j < len(map[0]) else 0
             for j in range(column_number-1-radius, column_number+radius)]
