@@ -3,9 +3,9 @@ import matplotlib.pyplot as plt
 from matplotlib import animation
 from matplotlib import colors
 
-model = WilfireModel(100,100,1)
-colors_list_fire = ['black',(0,0,0,0), 'brown', 'darkorange']
-colors_list_spread = ["white",(0.2,0.2,0), (1,1,1),(0.8,1,0.7), (0.8,1,0.2), (0.3, 0.7,0), (0.3,0.5,0),]
+model = WilfireModel(100,100,5)
+colors_list_fire = ['black',(0,0,0,0), 'brown', 'orangered']
+colors_list_spread = ["whitesmoke",(0.2,0.2,0), (1,1,1),(0.8,1,0.7), (0.8,1,0.2), (0.3, 0.7,0), (0.3,0.5,0),]
 cmap_fire = colors.ListedColormap(colors_list_fire)
 cmap_spread = colors.ListedColormap(colors_list_spread)
 bounds_fire = [-1,0,1,2]
