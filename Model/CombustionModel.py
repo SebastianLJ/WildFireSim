@@ -13,10 +13,14 @@ class CombustionModel():
         np.random.seed(self.seed)
         random.seed(self.seed)
 
+        # init models
         self.EcoModel = EcoModel(self.n, self.m, self.seed)
         self.FireModel = FireModel(self.n, self.m, self.seed)
         self.WindModel = WindModel(self.n, self.m, self.seed)
 
+        # generate terrain
+        self.EcoModel.generate_terrain()
+        # generate spread map
         self.generate_spread_map()
         
     
@@ -24,7 +28,7 @@ class CombustionModel():
         self.spreadMap = np.zeros((self.n,self.m), dtype=int)
         for i in range(0, len(self.spreadMap)):
             for j in range(0, len(self.spreadMap[i])):
-                self.spreadMap[i][j] = self.EcoModel.get_spread(self.TerrainMap[i][j]) * self.WindModel.windSpeed
+                self.spreadMap[i][j] = self.EcoModel.get_spread_rate(i, j) * self.WindModel.windSpeed
 
 
     def spread(self):

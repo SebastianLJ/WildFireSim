@@ -41,7 +41,7 @@ def generate_fractal_noise_2d(shape, res, octaves=1, persistence=0.5):
     return noise
 
 class EcoModel():
-
+    WATER, GRASS, TREE, BARE_GROUND = 0, 1, 2, 3
     def __init__(self, n, m, seed):
         self.n = n
         self.m = m
@@ -67,16 +67,16 @@ class EcoModel():
         self.noise_map=noise
     
     def add_water(self,water_threshold):
-        self.terrainMap[self.noise_map<water_threshold]=0
+        self.terrainMap[self.noise_map<water_threshold]=self.WATER
     
     def add_trees(self,tree_threshold):
         potential_tree=((self.noise_map-tree_threshold)/(1-tree_threshold))**2*0.9
         tree_mask = (self.noise_map > tree_threshold)*(np.random.rand(self.n,self.m)<potential_tree)
-        self.terrainMap[tree_mask]=2
+        self.terrainMap[tree_mask]=self.TREE
     
     def add_ground(self):
         ground_mask=(self.terrainMap==1)*(np.random.rand(self.n,self.m)<0.3)
-        self.terrainMap[ground_mask]=3
+        self.terrainMap[ground_mask]=self.BARE_GROUND
 
     def plot_terrain(self):
         plt.figure()
@@ -84,6 +84,17 @@ class EcoModel():
         print(self.terrainMap)
         self.image = colors[self.terrainMap.reshape(-1)].reshape(self.terrainMap.shape+(3,))
         plt.imshow(self.image)
+    
+    def get_spread_rate(self, i, j):
+        vegetation = self.terrainMap[i][j]
+        if vegetation == self.WATER:
+            return 0
+        elif vegetation == self.GRASS:
+            return 1
+        elif vegetation == self.TREE:
+            return 0.6405
+        elif vegetation == self.BARE_GROUND:
+            return 0
         
 if __name__=="__main__":
     test_terrain=EcoModel(n=64,m=64,seed=2)
