@@ -1,8 +1,8 @@
 import numpy as np
 import random
-import EcoModel
-import FireModel
-import WindModel
+from EcoModel import EcoModel
+from FireModel import FireModel
+from WindModel import WindModel
 
 class CombustionModel():
     def __init__(self, n, m, seed, isPredictionMode):
@@ -22,10 +22,11 @@ class CombustionModel():
         self.EcoModel.generate_terrain()
         # generate spread map
         self.generate_spread_map()
+        print(self.spreadMap)
         
     
     def generate_spread_map(self):
-        self.spreadMap = np.zeros((self.n,self.m), dtype=int)
+        self.spreadMap = np.zeros((self.n,self.m), dtype=float)
         for i in range(0, len(self.spreadMap)):
             for j in range(0, len(self.spreadMap[i])):
                 self.spreadMap[i][j] = self.EcoModel.get_spread_rate(i, j) * self.WindModel.windSpeed
@@ -50,3 +51,6 @@ class CombustionModel():
                     if self.wind_coefficient(i-1,j-1) > highest_wind:
                         highest_wind = self.wind_coefficient(i-1,j-1)
         return highest_wind
+
+if __name__=="__main__":
+    test_model = CombustionModel(n=64, m=64, seed=2, isPredictionMode=False)

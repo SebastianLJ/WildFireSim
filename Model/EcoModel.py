@@ -86,14 +86,14 @@ class EcoModel():
         plt.imshow(self.image)
     
     def get_spread_rate(self, i, j):
-        vegetation = self.terrainMap[i][j]
-        if vegetation == self.WATER:
+        terrain_type = self.terrainMap[i][j]
+        if terrain_type == self.WATER:
             return 0
-        elif vegetation == self.GRASS:
+        elif terrain_type == self.GRASS:
             return 1
-        elif vegetation == self.TREE:
+        elif terrain_type == self.TREE:
             return 0.6405
-        elif vegetation == self.BARE_GROUND:
+        elif terrain_type == self.BARE_GROUND:
             return 0
         
 if __name__=="__main__":
