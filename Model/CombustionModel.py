@@ -33,18 +33,25 @@ class CombustionModel():
 
 
     def spread(self):
+        spread = []
         for i in range(0, len(self.FireModel.fireMap)):
             for j in range(0, len(self.FireModel.fireMap[i])):
-                if self.FireModel.fireMap[i][j] == 1:
+                if self.FireModel.fireMap[i][j] == self.FireModel.BURNING:
                     neighbors = self.get_neighbourhood(1, i, j, self.spreadMap)
                     for k in range(0, len(neighbors)):
                         for l in range(0, len(neighbors[k])):
                             # larger or equals than 10 because windspeed max is 10
-                            if neighbors[k][l] >= 10:
-                                self.FireModel.fireMap[k][l] = 1
+                            if neighbors[k][l] >= 1:
+                                if (i+(k-1) >= 0 and i+(k-1) < self.n and j+k-1 >= 0 and j+k-1 < self.m):
+                                    spread.append((i+k-1,j+l-1))
                             else:
                                 if (i+(k-1) >= 0 and i+(k-1) < self.n and j+k-1 >= 0 and j+k-1 < self.m):
                                     self.spreadMap[i+(k-1)][j+(l-1)] *= 2
+        for pair in spread:
+            self.FireModel.start_fire(pair[0], pair[1])
+        return
+
+    def burn_down(self):
         return
 
     def get_neighbourhood_with_wind(self, row_number, column_number, map):
@@ -60,16 +67,11 @@ class CombustionModel():
             for j in range(column_number-1-radius, column_number+radius)]
                 for i in range(row_number-1-radius, row_number+radius)]
 
-    def get_neighbour_spread_risk(self, neighbors):
-        highest_wind = 1
-        for i in range(0, len(neighbors)):
-            for j in range(0, len(neighbors[i])):
-                if neighbors[i][j] == 1:
-                    if self.wind_coefficient(i-1,j-1) > highest_wind:
-                        highest_wind = self.wind_coefficient(i-1,j-1)
-        return highest_wind
-
 if __name__=="__main__":
     np.set_printoptions(threshold=sys.maxsize)
-    test_model = CombustionModel(n=32, m=32, seed=2, isPredictionMode=False)
+    test_model = CombustionModel(n=32, m=32, seed=4, isPredictionMode=False)
+    test_model.FireModel.start_fire(int(test_model.n/2), int(test_model.m/2))
+    print(test_model.FireModel.fireMap)
+    test_model.spread()
+    print(test_model.FireModel.fireMap)
 
