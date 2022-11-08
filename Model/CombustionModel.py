@@ -40,13 +40,13 @@ class CombustionModel():
                     neighbors = self.get_neighbourhood(1, i, j, self.spreadMap)
                     for k in range(0, len(neighbors)):
                         for l in range(0, len(neighbors[k])):
-                            # larger or equals than 10 because windspeed max is 10
-                            if neighbors[k][l] >= 1:
-                                if (i+(k-1) >= 0 and i+(k-1) < self.n and j+k-1 >= 0 and j+k-1 < self.m):
-                                    spread.append((i+k-1,j+l-1))
-                            else:
-                                if (i+(k-1) >= 0 and i+(k-1) < self.n and j+k-1 >= 0 and j+k-1 < self.m):
-                                    self.spreadMap[i+(k-1)][j+(l-1)] *= 2
+                            if i+(k-1) >= 0 and i+(k-1) < self.n and j+l-1 >= 0 and j+l-1 < self.m:
+                                # larger or equals than 10 because windspeed max is 10
+                                if neighbors[k][l] >= 1:
+                                    if self.FireModel.fireMap[i+k-1][j+l-1] == self.FireModel.UNBURNED:
+                                        spread.append((i+k-1,j+l-1))
+                                else:
+                                    self.spreadMap[i+(k-1)][j+(l-1)] += self.EcoModel.get_spread_rate(i+(k-1), j+(l-1)) * self.WindModel.windSpeed
         for pair in spread:
             self.FireModel.start_fire(pair[0], pair[1])
         return
@@ -67,11 +67,12 @@ class CombustionModel():
             for j in range(column_number-1-radius, column_number+radius)]
                 for i in range(row_number-1-radius, row_number+radius)]
 
+    def get_terrainMap(self):
+        return self.EcoModel.terrainMap
+
 if __name__=="__main__":
     np.set_printoptions(threshold=sys.maxsize)
-    test_model = CombustionModel(n=32, m=32, seed=4, isPredictionMode=False)
+    test_model = CombustionModel(n=32, m=32, seed=1, isPredictionMode=False)
     test_model.FireModel.start_fire(int(test_model.n/2), int(test_model.m/2))
-    print(test_model.FireModel.fireMap)
-    test_model.spread()
-    print(test_model.FireModel.fireMap)
+    print(test_model.spreadMap)
 
