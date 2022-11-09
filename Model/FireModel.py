@@ -10,3 +10,6 @@ class FireModel():
         np.random.seed(self.seed)
         random.seed(self.seed)
         self.fireMap = np.zeros((self.n,self.m), dtype=int)
+
+    def start_fire(self, x, y):
+        self.fireMap[x][y] = self.BURNING

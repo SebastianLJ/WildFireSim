@@ -9,8 +9,9 @@ class WindModel():
         self.seed = seed
         np.random.seed(self.seed)
         random.seed(self.seed)
-        self.windDirection = random.randrange(0,8)
-        self.windSpeed = random.randrange(0,10)
+        #self.windDirection = random.randrange(0,8)
+        self.windDirection = self.NE
+        self.windSpeed = random.randrange(1,10)
         print("Wind direction: ", self.windDirection)
         print("Wind speed: ", self.windSpeed)
 
