@@ -27,7 +27,7 @@ def animate(i):
     im.set_data(animate.X)
     model.spread()
     animate.X = model.FireModel.fireMap
-    #print(model.time/60/60)
+    print(model.time/60/60)
 
 
 # Bind our grid to the identifier X in the animate function's namespace.

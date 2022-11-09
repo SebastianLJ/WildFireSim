@@ -43,7 +43,8 @@ class CombustionModel():
 
 
     def spread(self):
-        # one spread call equals 42.6 seconds real time
+        # one spread call equals 27.307 seconds real time
+        # 30 / (3955 / 60) =
         spread = []
         for i in range(0, len(self.FireModel.fireMap)):
             for j in range(0, len(self.FireModel.fireMap[i])):
@@ -61,7 +62,7 @@ class CombustionModel():
         
         self.DroneModel.move()
         #print("spreadModel: ", self.DroneModel.noisySpreadMap[0])
-        self.time += 42.6
+        self.time += 27.307
         return self.time
 
     def burn_down(self):
