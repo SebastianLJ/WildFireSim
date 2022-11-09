@@ -16,6 +16,7 @@ class CombustionModel():
         self.n = n
         self.m = m
         self.seed = seed
+        self.time = 0
         self.isPredictionMode = isPredictionMode
         np.random.seed(self.seed)
         random.seed(self.seed)
@@ -42,26 +43,26 @@ class CombustionModel():
 
 
     def spread(self):
+        # one spread call equals 42.6 seconds real time
         spread = []
         for i in range(0, len(self.FireModel.fireMap)):
             for j in range(0, len(self.FireModel.fireMap[i])):
-                if self.FireModel.fireMap[i][j] == self.FireModel.BURNING:
+                if self.FireModel.fireMap[i][j] == self.FireModel.BURNING and self.spreadMap[i][j] >= 1:
                     neighbors = self.get_neighbourhood(1, i, j, self.spreadMap)
                     for k in range(0, len(neighbors)):
                         for l in range(0, len(neighbors[k])):
                             if i+(k-1) >= 0 and i+(k-1) < self.n and j+l-1 >= 0 and j+l-1 < self.m:
-                                # larger or equals than 10 because windspeed max is 10
-                                if neighbors[k][l] >= 1:
-                                    if self.FireModel.fireMap[i+k-1][j+l-1] == self.FireModel.UNBURNED:
+                                    if self.spreadMap[i+k-1][j+l-1] > 0 and self.FireModel.fireMap[i+k-1][j+l-1] == self.FireModel.UNBURNED:
                                         spread.append((i+k-1,j+l-1))
-                                else:
-                                    self.spreadMap[i+(k-1)][j+(l-1)] += self.EcoModel.get_spread_rate(i+(k-1), j+(l-1)) * self.WindModel.windSpeed
+                elif self.FireModel.fireMap[i][j] == self.FireModel.BURNING:
+                    self.spreadMap[i][j] += self.EcoModel.get_spread_rate(i, j) * self.WindModel.windSpeed
         for pair in spread:
             self.FireModel.start_fire(pair[0], pair[1])
         
         self.DroneModel.move()
         #print("spreadModel: ", self.DroneModel.noisySpreadMap[0])
-        return
+        self.time += 42.6
+        return self.time
 
     def burn_down(self):
         return

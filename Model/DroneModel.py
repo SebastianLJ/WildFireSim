@@ -25,7 +25,12 @@ class DroneModel():
             self.droneMap[0][startingPosition] = j
             self.dronePositions[j] = [0, startingPosition, (1,0)]
         print("initialize: ", self.dronePositions)
-    
+        #set noisyspreadmapm noisyfiremap equal to spreadmap, firemap but with noise
+        for i in range(0,self.n):
+            for j in range(0,self.m):
+                self.noisySpreadMap[i][j] = self.spreadMap[i][j] * np.random.uniform(0,1)
+                self.noisyFireMap[i][j] = self.fireMap[i][j] * np.random.uniform(0,1)
+
     def updateVision(self, posy, posx, droneNo): #update the vision of the drone in the viewMap 
         #remove the old vision of the drone with the droneNo
         for i in range(0,self.n):
