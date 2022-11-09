@@ -2,7 +2,7 @@ import numpy as np
 import random
 import time
 
-class WilfireModel():
+class WildfireModel():
     NONE, N, NE, E, SE, S, SW, W, NW = range(9)
     def __init__(self, n, m, seed):
         self.n = n
