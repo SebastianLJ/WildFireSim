@@ -9,6 +9,7 @@ import random
 from EcoModel import EcoModel
 from FireModel import FireModel
 from WindModel import WindModel
+from DroneModel import DroneModel
 
 class CombustionModel():
     def __init__(self, n, m, seed, isPredictionMode):
@@ -29,6 +30,9 @@ class CombustionModel():
         # generate spread map
         self.generate_spread_map()
         
+        self.DroneModel = DroneModel(self.n, self.m, self.seed, self.spreadMap, self.FireModel.fireMap, 2)
+        self.DroneModel.initialize()
+
     
     def generate_spread_map(self):
         self.spreadMap = np.zeros((self.n,self.m), dtype=float)
@@ -51,6 +55,9 @@ class CombustionModel():
                                         spread.append((i+k-1,j+l-1))
         for pair in spread:
             self.FireModel.start_fire(pair[0], pair[1])
+        
+        self.DroneModel.move()
+        #print("spreadModel: ", self.DroneModel.noisySpreadMap[0])
         return
 
     def burn_down(self):
@@ -76,5 +83,6 @@ if __name__=="__main__":
     np.set_printoptions(threshold=sys.maxsize)
     test_model = CombustionModel(n=32, m=32, seed=1, isPredictionMode=False)
     test_model.FireModel.start_fire(int(test_model.n/2), int(test_model.m/2))
-    print(test_model.spreadMap)
+    #print(test_model.spreadMap[0])
+    #test_model.spread()
 

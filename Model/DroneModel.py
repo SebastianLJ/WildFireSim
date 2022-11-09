@@ -2,54 +2,94 @@ import numpy as np
 import random
 
 class DroneModel():
-    def __init__(self, n, m, seed, spreadMap, noisySpreadMap, droneNumber):
+    VIEWRANGE = 1
+    MOVERANGE = 2
+    def __init__(self, n, m, seed, spreadMap, fireMap, droneNumber):
         self.n = n
         self.m = m
         self.seed = seed
         np.random.seed(self.seed)
         random.seed(self.seed)
+        self.noisySpreadMap = np.zeros((self.n,self.m), dtype=float)
         self.spreadMap = spreadMap
-        self.noisySpreadMap = noisySpreadMap
         self.droneMap = np.zeros((self.n,self.m), dtype=int)
         self.viewMap = np.zeros((self.n,self.m), dtype=int)
         self.droneNumber = droneNumber
-        self.viewRange = 5
-        self.moveRange = 2
         self.dronePositions = {}
+        self.noisyFireMap = np.zeros((self.n,self.m), dtype=float)
+        self.fireMap = fireMap
     
-    def initialize(self, n,m):
+    def initialize(self):
         for j in range(1, self.droneNumber+1): #for each drone place it in a random position
-            self.droneMap[0][np.randint(0,m)] = j
-            self.dronePositions[j] = [0, np.randint(0,m)]
-    
-    def updateVision(self, n,m, posy, posx, droneNo): #update the vision of the drone in the viewMap 
+            startingPosition = random.randint(0, self.m)
+            self.droneMap[0][startingPosition] = j
+            self.dronePositions[j] = [0, startingPosition, (1,0)]
+        print("initialize: ", self.dronePositions)
+        #set noisyspreadmapm noisyfiremap equal to spreadmap, firemap but with noise
+        for i in range(0,self.n):
+            for j in range(0,self.m):
+                self.noisySpreadMap[i][j] = self.spreadMap[i][j] * np.random.uniform(0,1)
+                self.noisyFireMap[i][j] = self.fireMap[i][j] * np.random.uniform(0,1)
+
+    def updateVision(self, posy, posx, droneNo): #update the vision of the drone in the viewMap 
         #remove the old vision of the drone with the droneNo
-        for i in range(0,n):
-            for j in range(0,m):
+        for i in range(0,self.n):
+            for j in range(0,self.m):
                 if self.viewMap[i][j] == droneNo:
                     self.viewMap[i][j] = 0
-        #update the vision of the drone with the droneNo in the viewMap and update the noisySpreadMap
-        for i in range(posy-self.viewRange, posy+self.viewRange):
-            for j in range(posx-self.viewRange, posx+self.viewRange):
-                if i >= 0 and i < n and j >= 0 and j < m:
+        #update the vision of the drone with the droneNo in the viewMap and update the noisySpreadMap and noisyFireMap
+        for i in range(posy-self.VIEWRANGE, posy+self.VIEWRANGE+1):
+            for j in range(posx-self.VIEWRANGE, posx+self.VIEWRANGE+1):
+                if i >= 0 and i < self.n and j >= 0 and j < self.m:
                     self.viewMap[i][j] = droneNo
                     self.noisySpreadMap[i][j] = self.spreadMap[i][j]
-        
-
-            
-        
-    
-    def move(self, n,m, posy, posx):
-        #for each drone move it down by 1 until it has moved a distance of moveRange
-        for j in range(self.droneNumber):
+                    self.noisyFireMap[i][j] = self.fireMap[i][j]
+    def move(self):
+        #for each drone move it down by 1 until it has moved a distance of MOVERANGE
+        for j in range(1, self.droneNumber+1):
             ypos = self.dronePositions[j][0]
             xpos = self.dronePositions[j][1]
-            for i in range(ypos+1, ypos+self.moveRange):
-                if i >= 0 and i < n:
-                    self.droneMap[i-1][xpos] = 0 #remove the drone from the old position
-                    self.droneMap[i][xpos] = j #place the drone in the new position
-                    self.dronePositions[j] = [i, xpos] #update the position of the drone
-                    self.updateVision(n,m, i, posx) #update the vision of the drone
+            direction = self.dronePositions[j][2]
+            if direction == (1,0):
+                self.moveDown(ypos, xpos, j)
+
+            elif direction == (-1,0):
+                self.moveUp(ypos, xpos, j)
+
+    def moveDown(self, ypos,  xpos, droneNo):
+        remainingMoves = self.MOVERANGE
+        for i in range(ypos+1, ypos+self.MOVERANGE): #move the drone down
+                        if i >= 0 and i < self.n:
+                            self.droneMap[i-1][xpos] = 0 #remove the drone from the old position
+                            self.droneMap[i][xpos] = droneNo #place the drone in the new position
+                            self.dronePositions[droneNo] = [i, xpos, (1,0)] #update the position of the drone
+                            self.updateVision(i, xpos, droneNo) #update the vision of the drone
+                            remainingMoves -= 1
+                        else: 
+                            for k in range(1,remainingMoves): 
+                                self.droneMap[i-k][xpos] = 0
+                                self.droneMap[i-k-1][xpos] = droneNo
+                                self.dronePositions[droneNo] = [i-k-1, xpos, (1,0)]
+                                self.updateVision(i-k-1, xpos, droneNo)
+                            self.dronePositions[droneNo][2] = (-1,0)
+                            break
+    def moveUp(self, ypos, xpos,droneNo):
+                remainingMoves = self.MOVERANGE
+                for i in range(ypos-1, ypos-self.MOVERANGE, -1): #move the drone up (reversed loop order)
+                    if i >= 0 and i < self.n:
+                        self.droneMap[i+1][xpos] = 0 
+                        self.droneMap[i][xpos] = droneNo
+                        self.dronePositions[droneNo] = [i, xpos,(-1,0)]
+                        self.updateVision(i, xpos, droneNo)
+                        remainingMoves -= 1
+                    else:
+                        for k in range(1,remainingMoves):
+                            self.droneMap[i+k][xpos] = 0
+                            self.droneMap[i+k+1][xpos] = droneNo
+                            self.dronePositions[droneNo] = [i+k+1, xpos, (-1,0)]
+                            self.updateVision(i+k+1, xpos, droneNo)
+                        self.dronePositions[droneNo][2] = (1,0)
+                        break
 
 
                 

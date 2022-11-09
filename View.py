@@ -6,6 +6,7 @@ import numpy as np
 
 model = CombustionModel(64, 64, 1, False)
 colors_list_fire = ['black', (0, 0, 0, 0), 'brown', 'orangered']
+model = CombustionModel(64,64,1, False)
 colors_list_spread = ['blue', 'green', 'darkgreen', 'brown']
 cmap_fire = colors.ListedColormap(colors_list_fire)
 cmap_spread = colors.ListedColormap(colors_list_spread)
