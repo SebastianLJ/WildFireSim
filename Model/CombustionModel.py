@@ -47,7 +47,7 @@ class CombustionModel():
         spread = []
         for i in range(0, len(self.FireModel.fireMap)):
             for j in range(0, len(self.FireModel.fireMap[i])):
-                if self.FireModel.fireMap[i][j] == self.FireModel.BURNING and self.spreadMap[i][j] >= 10:
+                if self.FireModel.fireMap[i][j] == self.FireModel.BURNING and self.spreadMap[i][j] >= 1:
                     neighbors = self.get_neighbourhood(1, i, j, self.spreadMap)
                     for k in range(0, len(neighbors)):
                         for l in range(0, len(neighbors[k])):
