@@ -41,13 +41,14 @@ def generate_fractal_noise_2d(shape, res, octaves=1, persistence=0.5):
     return noise
 
 class EcoModel():
-    WATER, GRASS, TREE, BARE_GROUND = 0, 1, 2, 3
+    WATER, GRASS, TREE, BARE_GROUND, SHRUB= 0, 1, 2, 3, 4
     def __init__(self, n, m, seed):
         self.n = n
         self.m = m
         self.seed = seed
         self.water_thresh=0.2
         self.tree_thresh=0.1
+        self.shrub_thresh=0.15
         np.random.seed(self.seed)
         random.seed(self.seed)
         # Generation of random map
@@ -58,6 +59,7 @@ class EcoModel():
     def generate_terrain(self):
         self.generate_noise()
         self.add_trees(tree_threshold=self.tree_thresh)
+        self.add_shrub(shrub_threshold=self.shrub_thresh)
         self.add_ground()
         self.add_water(water_threshold=self.water_thresh)
 
@@ -70,20 +72,27 @@ class EcoModel():
         self.terrainMap[self.noise_map<water_threshold]=self.WATER
     
     def add_trees(self,tree_threshold):
-        potential_tree=((self.noise_map-tree_threshold)/(1-tree_threshold))**2*0.9
+        potential_tree=((self.noise_map-tree_threshold)/(1-tree_threshold))**2
         tree_mask = (self.noise_map > tree_threshold)*(np.random.rand(self.n,self.m)<potential_tree)
         self.terrainMap[tree_mask]=self.TREE
     
     def add_ground(self):
-        ground_mask=(self.terrainMap==1)*(np.random.rand(self.n,self.m)<0.3)
+        ground_mask=(self.terrainMap==1)*(np.random.rand(self.n,self.m)<0.1)
         self.terrainMap[ground_mask]=self.BARE_GROUND
+
+    def add_shrub(self, shrub_threshold):
+        potential_shrub=((self.noise_map-shrub_threshold)/(1-shrub_threshold))**2*0.3
+        shrub_mask = (self.noise_map > shrub_threshold)*(np.random.rand(self.n,self.m)<potential_shrub)
+        self.terrainMap[shrub_mask]=self.SHRUB
 
     def plot_terrain(self):
         plt.figure()
-        colors = np.array([[156, 212, 226], [138, 181, 73], [95, 126, 48], [186, 140, 93]], dtype=np.uint8)
+        colors = np.array([[156, 212, 226], [138, 181, 73], [95, 126, 48], [186, 140, 93], [41, 150, 23]], dtype=np.uint8)
         print(self.terrainMap)
         self.image = colors[self.terrainMap.reshape(-1)].reshape(self.terrainMap.shape+(3,))
         plt.imshow(self.image)
+
+    
     
     def get_spread_rate(self, i, j):
         terrain_type = self.terrainMap[i][j]
@@ -95,16 +104,29 @@ class EcoModel():
             return 0.6405
         elif terrain_type == self.BARE_GROUND:
             return 0
-        
+        elif terrain_type == self.SHRUB:
+            return 0.0177
+
+    def get_burn_rate(self, i, j):
+        terrain_type = self.terrainMap[i][j]
+        if terrain_type == self.WATER:
+            return 0
+        elif terrain_type == self.GRASS:
+            return 10
+        elif terrain_type == self.TREE:
+            return 3
+        elif terrain_type == self.BARE_GROUND:
+            return 0
+        elif terrain_type == self.SHRUB:
+            return 6
+
 if __name__=="__main__":
-    test_terrain=EcoModel(n=64,m=64,seed=2)
+    test_terrain=EcoModel(n=64,m=64,seed=4)
     test_terrain.generate_terrain()
     test_terrain.plot_terrain()
 
-    test_terrain2=EcoModel(n=64,m=64,seed=3)
+    test_terrain2=EcoModel(n=64,m=64,seed=5)
     test_terrain2.generate_terrain()
     test_terrain2.plot_terrain()
 
     plt.show()
-
-	
