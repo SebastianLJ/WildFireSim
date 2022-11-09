@@ -27,13 +27,14 @@ def animate(i):
     im.set_data(animate.X)
     model.spread()
     animate.X = model.FireModel.fireMap
+    print(model.time/60/60)
 
 
 # Bind our grid to the identifier X in the animate function's namespace.
 animate.X = model.FireModel.fireMap
 
 # Interval between frames (ms).
-interval = 500
+interval = 100
 model.FireModel.start_fire(int(model.n / 2), int(model.m / 2))
 anim = animation.FuncAnimation(fig, animate, interval=interval, frames=300)
 # anim.save("forest_fire.mp4")
