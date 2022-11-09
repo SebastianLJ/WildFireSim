@@ -63,7 +63,6 @@ class CombustionModel():
             self.FireModel.start_fire(pair[0], pair[1])
         
         self.DroneModel.move(self.spreadMap)
-        return
         self.burn_down()
         self.DroneModel.move()
         #print("spreadModel: ", self.DroneModel.noisySpreadMap[0])
