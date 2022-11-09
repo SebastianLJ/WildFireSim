@@ -61,6 +61,8 @@ class CombustionModel():
                     self.spreadMap[i][j] += self.EcoModel.get_spread_rate(i, j) * self.WindModel.windSpeed
         for pair in spread:
             self.FireModel.start_fire(pair[0], pair[1])
+        
+        self.DroneModel.move(self.spreadMap)
         self.burn_down()
         self.DroneModel.move()
         #print("spreadModel: ", self.DroneModel.noisySpreadMap[0])
