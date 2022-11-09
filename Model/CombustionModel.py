@@ -61,17 +61,14 @@ class CombustionModel():
                     self.spreadMap[i][j] += self.EcoModel.get_spread_rate(i, j) * self.WindModel.windSpeed
         for pair in spread:
             self.FireModel.start_fire(pair[0], pair[1])
-<<<<<<< HEAD
         
         self.DroneModel.move(self.spreadMap)
         return
-=======
         self.burn_down()
         self.DroneModel.move()
         #print("spreadModel: ", self.DroneModel.noisySpreadMap[0])
         self.time += 27.3
         return self.time
->>>>>>> 4e8f57d394aae585b940d52da5d88dc763355cc4
 
     def burn_down(self):
         for i in range(0, self.n):
@@ -104,5 +101,5 @@ if __name__=="__main__":
     test_model = CombustionModel(n=32, m=32, seed=1, isPredictionMode=False)
     test_model.FireModel.start_fire(int(test_model.n/2), int(test_model.m/2))
     #print(test_model.spreadMap[0])
-    test_model.spread()
+    #test_model.spread()
 
