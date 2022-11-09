@@ -2,7 +2,7 @@ import numpy as np
 import random
 
 class FireModel():
-    BURNED, UNBURNED, BURNING = -1, 0, 1
+    BURNT, UNBURNT, BURNING = -1, 0, 1
     def __init__(self, n, m, seed):
         self.n = n
         self.m = m

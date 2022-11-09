@@ -96,6 +96,17 @@ class EcoModel():
         elif terrain_type == self.BARE_GROUND:
             return 0
         
+    def get_burn_rate(self, i, j):
+        terrain_type = self.terrainMap[i][j]
+        if terrain_type == self.WATER:
+            return 0
+        elif terrain_type == self.GRASS:
+            return 10
+        elif terrain_type == self.TREE:
+            return 5
+        elif terrain_type == self.BARE_GROUND:
+            return 0
+
 if __name__=="__main__":
     test_terrain=EcoModel(n=64,m=64,seed=2)
     test_terrain.generate_terrain()
