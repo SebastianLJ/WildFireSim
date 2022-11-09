@@ -4,10 +4,9 @@ from matplotlib import animation
 from matplotlib import colors
 import numpy as np
 
-model = CombustionModel(64, 64, 1, False)
-colors_list_fire = ['black', (0, 0, 0, 0), 'brown', 'orangered']
-model = CombustionModel(64,64,1, False)
-colors_list_spread = ['blue', 'green', 'darkgreen', 'brown']
+model = CombustionModel(64, 64, 3, False)
+colors_list_fire = [(157/255, 69/255, 49/255), (0, 0, 0, 0), 'brown', (252/255,100/255,0/255)]
+colors_list_spread = [(156/255, 212/255, 226/255), (138/255, 181/255, 73/255), (95/255, 126/255, 48/255), (186/255, 140/255, 93/255)]
 cmap_fire = colors.ListedColormap(colors_list_fire)
 cmap_spread = colors.ListedColormap(colors_list_spread)
 bounds_fire = [-1, 0, 1, 2]

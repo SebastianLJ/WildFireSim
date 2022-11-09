@@ -64,8 +64,6 @@ class CombustionModel():
         
         self.DroneModel.move(self.spreadMap)
         self.burn_down()
-        self.DroneModel.move()
-        #print("spreadModel: ", self.DroneModel.noisySpreadMap[0])
         self.time += 27.3
         return self.time
 
