@@ -62,6 +62,7 @@ class EcoModel():
         self.add_shrub(shrub_threshold=self.shrub_thresh)
         self.add_ground()
         self.add_water(water_threshold=self.water_thresh)
+        self.add_shrub(self.shrub_thresh)
 
     def generate_noise(self):
         noise = generate_fractal_noise_2d((self.n,self.m),(1,1),6)
