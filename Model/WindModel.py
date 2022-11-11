@@ -13,7 +13,8 @@ class WindModel():
         self.windDirection = self.NE
         self.windSpeed = random.random()
         print("Wind direction: ", self.windDirection)
-        print("Wind speed: ", self.windSpeed)
+        print("Wind speed: ", self.windSpeed*30, "m/s")
+        print("Normalized Wind speed: ", self.windSpeed)
 
     def get_direction(self, i,j):
         if i < 0 and j == 0:
