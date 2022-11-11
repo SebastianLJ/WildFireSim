@@ -36,21 +36,43 @@ def animate(i):
     model.spread()
     animate.X = model.FireModel.fireMap
 
+# water : #9cd4e2
+# grass : #8ab549
+# shrub : #5f7e30
+# ground : #ba8c5d
+# tree : #299617
+
 def create_window():
     AppFont = 'Any 12'
     sg.theme('DarkAmber')
-    
+    legend_col = [[sg.Text('Water'),sg.Button(size=(2,1),button_color="#0073ad")],
+                [sg.Text('Grass'),sg.Button(size=(2,1),button_color="#41bf02")],
+                [sg.Text('Shrub'),sg.Button(size=(2,1),button_color="#2f8a01")],
+                [sg.Text('Trees'),sg.Button(size=(2,1),button_color="#1f5c01")],
+                [sg.Text('Ground'),sg.Button(size=(2,1),button_color="#6b6243")],
+                
+    ]
+
     left_col = [[sg.Text('Seed'),sg.Input(key='-SEED-'),sg.Button('Generate Bio',key='-GENERATE-',enable_events=True)],
                 [sg.Canvas(key='-Graph1-')], 
                 [sg.Button('Reset',pad=((2,0),(5,0)),enable_events=True,key='-RESET-'),
-                    sg.Button('Save Simulation',pad=((2,0),(5,0)),enable_events=True,key='-SAVE-')]]
+                 sg.Button('Save Simulation',pad=((2,0),(5,0)),enable_events=True,key='-SAVE-')]]
     
     right_col = [[sg.Button('Start',button_color='white on green',enable_events=True,key='-START-'), 
                     sg.Button('Stop',button_color='white on red',key='-STOP-'),],
                     [sg.Canvas(key='-Graph2-')],
                     [sg.Button('Exit',pad=((2,0),(5,0)),enable_events=True,key="-EXIT-"),
                 ]]
-    layout = [[sg.Column(left_col,element_justification='c'),sg.VSeperator(),sg.Column(right_col,element_justification='c')],
+    stat_col = [[sg.Text('Windspeed m/s:'),sg.Text('',key='-WINDSPEED-')],
+                [sg.Text('Wind Direction:'),sg.Text('',key='-WINDDIR-')],
+                [sg.Text('Time Elapsed:'),sg.Text('',key='-TIME-')],
+                [sg.Text('Model Difference:'),sg.Text('',key='-MODELDIFF-')]]
+
+    layout = [[sg.Column(legend_col,element_justification='r'),
+               sg.Column(left_col,element_justification='c'),
+               sg.VSeperator(),
+               sg.Column(right_col,element_justification='c'),
+               sg.Column(stat_col,element_justification='l')],
             ]
     created_window = sg.Window('Fire Simulation',
                                 layout,
@@ -60,8 +82,11 @@ def create_window():
                             )
     return created_window
 
+
+
 def color_terrain_map(terrain_map):
-        colors = np.array([[156, 212, 226], [138, 181, 73], [95, 126, 48], [186, 140, 93], [41, 150, 23]], dtype=np.uint8)
+        # Water , Grass , Tree , Ground , Shrub
+        colors = np.array([[0, 115, 173], [65, 191, 2], [31, 92, 1], [107, 98, 67], [47, 138, 1]], dtype=np.uint8)
         image = colors[terrain_map.reshape(-1)].reshape(terrain_map.shape+(3,))
         return image
 
@@ -90,6 +115,11 @@ def clear_plot(index):
     fig.canvas.draw() 
 
 if __name__=="__main__":
+    n=128
+    m=128
+
+    title1="Real World Model"
+    title2="Predicted Model"
     # Generate window
     window = create_window()
     # Simulation starting flag
@@ -97,20 +127,19 @@ if __name__=="__main__":
     # Initial graphs
     graph1 = window['-Graph1-']
     graph2 = window['-Graph2-']
-    plt.ioff()                          # Turn the interactive mode off
+    plt.ioff()                                            # Turn the interactive mode off
     fig1 = plt.figure(1,facecolor='white')                # Create a new figure
-    ax1 = plt.subplot(111)              # Add a subplot to the current figure.
-    ax1.set_title("Real World Model",loc='center')
+    ax1 = plt.subplot(111)                                # Add a subplot to the current figure.
+    ax1.set_title(title1,loc='center')
     ax1.set_axis_off()
     fig2 = plt.figure(2,facecolor='white')                # Create a new figure
-    ax2 = plt.subplot(111)              # Add a subplot to the current figure.
-    ax2.set_title("Predicted Model",loc='center')
+    ax2 = plt.subplot(111)                                # Add a subplot to the current figure.
+    ax2.set_title(title2,loc='center')
     ax2.set_axis_off()
-    pack_figure(graph1, fig1)           # Pack figure under graph
+    pack_figure(graph1, fig1)                             # Pack figure under graph
     pack_figure(graph2, fig2)
     
-    n=128
-    m=128
+
      # MAIN LOOP
     while True:
             event, values = window.read(timeout=200)
@@ -123,18 +152,27 @@ if __name__=="__main__":
                     test_terrain=EcoModel(n=n,m=m,seed=selected_seed)
                     test_terrain.generate_terrain()
                     im=color_terrain_map(test_terrain.terrainMap)
-                    plot_figure(1,im, title="Real World Model")
-                    plot_figure(2,im, title="Predicted Model")
+                    plot_figure(1,im, title=title1)
+                    plot_figure(2,im, title=title2)
+                    
             if event == '-SAVE-':
                 print("Saved Simulation to directory: _INSERT_DIRECTORY_")
                 # anim.save("forest_fire.mp4")
             if event == '-START-':
                 if generated_flag:
                     simulation_start=True
+                    
                     model = CombustionModel(n, m, 1, False)
+                    window['-WINDSPEED-'].update(model.WindModel.windSpeed*30)
+                    window['-WINDDIR-'].update(model.WindModel.windDirection)
+                    
                     animate.X = model.FireModel.fireMap
                     interval = 100
                     model.FireModel.start_fire(int(model.n / 2), int(model.m / 2))
+
+                    window['-TIME-'].update(model.time)
+                    diff='0'
+                    window['-MODELDIFF-'].update(diff)
                    
                 print("Simulation Started")
             if event == '-STOP-':
@@ -144,5 +182,7 @@ if __name__=="__main__":
                 window['-SEED-'].Update('')
                 clear_plot(1)
                 clear_plot(2)
+                simulation_start=False
+                generated_flag=False
     
     window.close()
