@@ -4,7 +4,8 @@ from matplotlib import animation
 from matplotlib import colors
 import numpy as np
 
-model = CombustionModel(128, 128, 3, True, 2)
+true_model = CombustionModel(128, 128, 3)
+model = CombustionModel(128, 128, 3, True, 4)
 colors_list_fire = [(157/255, 69/255, 49/255), (0, 0, 0, 0), 'brown', (252/255,100/255,0/255)]
 colors_list_spread = [(156/255, 212/255, 226/255), (138/255, 181/255, 73/255), (95/255, 126/255, 48/255), (186/255, 140/255, 93/255), (41/255, 150/255, 23/255)]
 cmap_fire = colors.ListedColormap(colors_list_fire)
@@ -24,7 +25,8 @@ im = ax.imshow(model.FireModel.fireMap, cmap=cmap_fire, norm=norm_fire)  # , int
 # The animation function: called to produce a frame for each generation.
 def animate(i):
     im.set_data(animate.X)
-    model.spread()
+    true_model.spread()
+    model.spread(true_model.spreadMap)
     animate.X = model.FireModel.fireMap
     #print(model.time/60/60)
 
