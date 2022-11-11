@@ -4,7 +4,7 @@ from matplotlib import animation
 from matplotlib import colors
 import numpy as np
 
-model = CombustionModel(128, 128, 3, False)
+model = CombustionModel(128, 128, 3, False, 2)
 colors_list_fire = [(157/255, 69/255, 49/255), (0, 0, 0, 0), 'brown', (252/255,100/255,0/255)]
 colors_list_spread = [(156/255, 212/255, 226/255), (138/255, 181/255, 73/255), (95/255, 126/255, 48/255), (186/255, 140/255, 93/255), (41/255, 150/255, 23/255)]
 cmap_fire = colors.ListedColormap(colors_list_fire)
@@ -26,7 +26,7 @@ def animate(i):
     im.set_data(animate.X)
     model.spread()
     animate.X = model.FireModel.fireMap
-    print(model.time/60/60)
+    #print(model.time/60/60)
 
 
 # Bind our grid to the identifier X in the animate function's namespace.

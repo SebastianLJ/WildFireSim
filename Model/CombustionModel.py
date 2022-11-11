@@ -12,13 +12,14 @@ from WindModel import WindModel
 from DroneModel import DroneModel
 
 class CombustionModel():
-    def __init__(self, n, m, seed, isPredictionMode):
+    def __init__(self, n, m, seed, isPredictionMode=False, droneCount=0):
         # cell size is 30m
         self.n = n
         self.m = m
         self.seed = seed
         self.time = 0
         self.isPredictionMode = isPredictionMode
+        self.droneCount = droneCount
         np.random.seed(self.seed)
         random.seed(self.seed)
 
@@ -34,8 +35,9 @@ class CombustionModel():
         self.burnDownMap = np.zeros((self.n,self.m), dtype=float)
         self.burnDownMap.fill(30*30)
         
-        self.DroneModel = DroneModel(self.n, self.m, self.seed, self.spreadMap, self.FireModel.fireMap, 2)
-        self.DroneModel.initialize()
+        if self.isPredictionMode:
+            self.DroneModel = DroneModel(self.n, self.m, self.seed, self.spreadMap, self.FireModel.fireMap, self.droneCount)
+            self.DroneModel.initialize()
 
     
     def generate_spread_map(self):
@@ -45,27 +47,33 @@ class CombustionModel():
                 self.spreadMap[i][j] = self.EcoModel.get_spread_rate(i, j) * self.WindModel.windSpeed
 
 
-    def spread(self):
+    def spread(self, trueSpreadMap = [[0,0],[0,0]]):
         # one spread call equals 27.307 seconds real time
         spread = []
         for i in range(0, len(self.FireModel.fireMap)):
             for j in range(0, len(self.FireModel.fireMap[i])):
-                if self.FireModel.fireMap[i][j] == self.FireModel.BURNING and self.spreadMap[i][j] >= 1:
-                    neighbors = self.get_neighbourhood(1, i, j, self.spreadMap)
+                if self.FireModel.fireMap[i][j] == self.FireModel.BURNING and self.get_spreadMap()[i][j] >= 1:
+                    neighbors = self.get_neighbourhood(1, i, j, self.get_spreadMap())
                     for k in range(0, len(neighbors)):
                         for l in range(0, len(neighbors[k])):
                             if i+(k-1) >= 0 and i+(k-1) < self.n and j+l-1 >= 0 and j+l-1 < self.m:
-                                    if self.spreadMap[i+k-1][j+l-1] > 0 and self.FireModel.fireMap[i+k-1][j+l-1] == self.FireModel.UNBURNT:
+                                    if self.get_spreadMap()[i+k-1][j+l-1] > 0 and self.FireModel.fireMap[i+k-1][j+l-1] == self.FireModel.UNBURNT:
                                         spread.append((i+k-1,j+l-1))
                 elif self.FireModel.fireMap[i][j] == self.FireModel.BURNING:
-                    self.spreadMap[i][j] += self.EcoModel.get_spread_rate(i, j) * self.WindModel.windSpeed
+                    self.get_spreadMap()[i][j] += self.EcoModel.get_spread_rate(i, j) * self.WindModel.windSpeed
         for pair in spread:
             self.FireModel.start_fire(pair[0], pair[1])
-        
-        self.DroneModel.move(self.spreadMap)
         self.burn_down()
+        if self.isPredictionMode:
+            self.DroneModel.move(trueSpreadMap)
         self.time += 27.3
         return self.time
+
+    def get_spreadMap(self):
+        if self.isPredictionMode:
+            return self.DroneModel.noisySpreadMap
+        else:
+            return self.spreadMap
 
     def burn_down(self):
         for i in range(0, self.n):
