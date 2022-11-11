@@ -65,7 +65,7 @@ class CombustionModel():
             self.FireModel.start_fire(pair[0], pair[1])
         self.burn_down()
         if self.isPredictionMode:
-            self.DroneModel.move(self.spreadMap)
+            self.DroneModel.move(trueSpreadMap)
             self.spreadMap = self.DroneModel.noisySpreadMap
         self.time += 27.3
         return self.time
