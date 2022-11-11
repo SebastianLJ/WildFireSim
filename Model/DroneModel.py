@@ -19,7 +19,7 @@ class DroneModel():
         self.dronePositions = {}
         self.noisyFireMap = np.zeros((self.n,self.m), dtype=float)
         self.fireMap = fireMap
-        self.noisyMap = np.zeros((self.n, self.m), dtype=int)
+        self.noisyMap = np.zeros((self.n, self.m), dtype=float)
     
     def initialize(self):
         for j in range(1, self.droneNumber+1): #for each drone place it in a random position
@@ -29,7 +29,7 @@ class DroneModel():
         #set noisyspreadmapm noisyfiremap equal to spreadmap, firemap but with noise
         for i in range(0,self.n):
             for j in range(0,self.m):
-                self.noisyMap[i][j] = np.random.uniform(0.5, 1.5)
+                self.noisyMap[i][j] = np.random.uniform(0.8, 1.2)
                 
         self.noisySpreadMap = self.noisyMap.copy()
         self.noisyFireMap = self.noisyMap.copy()
@@ -59,7 +59,7 @@ class DroneModel():
         #loop through noisySpreadMap and multiply noisyMap to it
         for i in range(0,self.n):
             for j in range(0,self.m):
-                if(self.viewMap[i][j]==0): self.noisySpreadMap[i][j] *= self.noisyMap[i][j]
+                if(self.viewMap[i][j]==0): self.noisySpreadMap[i][j] = self.spreadMap[i][j] * self.noisyMap[i][j]
     def move(self, newSpreadMap):
         self.spreadMap=newSpreadMap
         #for each drone move it down by 1 until it has moved a distance of MOVERANGE
