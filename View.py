@@ -31,8 +31,7 @@ def animate(i):
 
 # Bind our grid to the identifier X in the animate function's namespace.
 animate.X = model.FireModel.fireMap
-
-# Interval between frames (ms).
+# Interval between frames (ms). 
 interval = 100
 model.FireModel.start_fire(int(model.n / 2)+3, int(model.m / 2)+3)
 anim = animation.FuncAnimation(fig, animate, interval=interval, frames=300)

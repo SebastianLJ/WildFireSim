@@ -119,7 +119,7 @@ class EcoModel():
         elif terrain_type == self.BARE_GROUND:
             return 0
         elif terrain_type == self.SHRUB:
-            return 6
+            return 1
 
 if __name__=="__main__":
     test_terrain=EcoModel(n=64,m=64,seed=4)

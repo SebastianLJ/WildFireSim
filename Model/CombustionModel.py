@@ -60,7 +60,7 @@ class CombustionModel():
                                     if self.spreadMap[i+k-1][j+l-1] > 0 and self.FireModel.fireMap[i+k-1][j+l-1] == self.FireModel.UNBURNT:
                                         spread.append((i+k-1,j+l-1))
                 elif self.FireModel.fireMap[i][j] == self.FireModel.BURNING:
-                    self.spreadMap[i][j] += self.EcoModel.get_spread_rate(i, j) * self.WindModel.windSpeed
+                    self.spreadMap[i][j] += (self.EcoModel.get_spread_rate(i, j) * self.WindModel.windSpeed)
         for pair in spread:
             self.FireModel.start_fire(pair[0], pair[1])
         self.burn_down()
