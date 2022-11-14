@@ -13,7 +13,7 @@ from DroneModel import DroneModel
 from Log import Log
 
 class CombustionModel():
-    def __init__(self, n, m, seed, isPredictionMode=False, droneCount=0, logData=False):
+    def __init__(self, n, m, seed, isPredictionMode=False, droneCount=0):
         # cell size is 30m
         self.n = n
         self.m = m
@@ -39,9 +39,6 @@ class CombustionModel():
         if self.isPredictionMode:
             self.DroneModel = DroneModel(self.n, self.m, self.seed, self.spreadMap, self.FireModel.fireMap, self.droneCount)
             self.DroneModel.initialize()
-
-        if logData:
-            self.log = Log()
 
     
     def generate_spread_map(self):

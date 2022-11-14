@@ -14,12 +14,12 @@ class Log():
         fireArea = np.count_nonzero(fireMap)
         predictedFireArea = np.count_nonzero(predictedFireMap)
         # should count true positives and false positives as well as true negatives and false negatives
-        precision = (fireArea - (fireArea - predictedFireArea)) / fireArea
-        self.log.append([time, fireArea, predictedFireArea, precision])
+        precision = (fireArea - abs(fireArea - predictedFireArea)) / fireArea
+        self.log.append([int(time), fireArea, predictedFireArea, precision])
     
     def write(self, seed, n, m, droneCount):
         filename = 'log_' + str(seed) + '_' + str(n) + '_' + str(m) + '_' + str(droneCount) + '.csv'
-        with open("/out/"+filename, 'w', newline='') as csvfile:
+        with open("out/"+filename, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
             writer.writerow(self.header)
             for row in self.log:
