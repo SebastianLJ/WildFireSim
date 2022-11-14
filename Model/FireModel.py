@@ -13,3 +13,10 @@ class FireModel():
 
     def start_fire(self, x, y):
         self.fireMap[x][y] = self.BURNING
+
+    def isFireDone(self):
+        for i in range(0, len(self.fireMap)):
+            for j in range(0, len(self.fireMap[i])):
+                if self.fireMap[i][j] == self.BURNING:
+                    return False
+        return True

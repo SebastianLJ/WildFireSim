@@ -33,6 +33,7 @@ def animate(i):
     log.add(model.time, model.FireModel.fireMap, prediction_model.FireModel.fireMap)
     animate.X = model.FireModel.fireMap
     log.write(model.seed, model.n, model.m, prediction_model.droneCount)
+    print(model.FireModel.isFireDone())
     #print(model.time/60/60)
 
 
