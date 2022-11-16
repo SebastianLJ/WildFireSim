@@ -30,9 +30,15 @@ class DroneModel():
         for i in range(0,self.n):
             for j in range(0,self.m):
                 self.noisyMap[i][j] = np.random.uniform(0.7, 1.3)
-                
-        self.noisySpreadMap = self.noisyMap.copy()
-        self.noisyFireMap = self.noisyMap.copy()
+        #loop through noisySpreadMap and multiply noisyMap with spreadmap
+        for i in range(0,self.n):
+            for j in range(0,self.m):
+                self.noisySpreadMap[i][j] = self.spreadMap[i][j] * self.noisyMap[i][j]
+
+        #loop through noisyFireMap and multiply noisyMap with firemap
+        for i in range(0,self.n):
+            for j in range(0,self.m):
+                self.noisyFireMap[i][j] = self.fireMap[i][j] * self.noisyMap[i][j]
 
 
     def updateVision(self, posy, posx, droneNo): #update the vision of the drone in the viewMap 
