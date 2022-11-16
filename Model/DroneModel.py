@@ -22,10 +22,14 @@ class DroneModel():
         self.noisyMap = np.zeros((self.n, self.m), dtype=float)
     
     def initialize(self):
-        for j in range(1, self.droneNumber+1): #for each drone place it in a random position
-            startingPosition = random.randint(0, self.m)
-            self.droneMap[0][startingPosition] = j
-            self.dronePositions[j] = [0, startingPosition, (1,0)]
+        if(self.droneNumber > self.n*self.m):
+            print("Error: too many drones")
+            return
+        if(self.droneNumber > 0):
+            for j in range(1, self.droneNumber+1): #for each drone place it in a random position
+                startingPosition = random.randint(0, self.m)
+                self.droneMap[0][startingPosition] = j
+                self.dronePositions[j] = [0, startingPosition, (1,0)]
         #set noisyspreadmapm noisyfiremap equal to spreadmap, firemap but with noise
         for i in range(0,self.n):
             for j in range(0,self.m):
@@ -39,7 +43,6 @@ class DroneModel():
         for i in range(0,self.n):
             for j in range(0,self.m):
                 self.noisyFireMap[i][j] = self.fireMap[i][j] * self.noisyMap[i][j]
-
 
     def updateVision(self, posy, posx, droneNo): #update the vision of the drone in the viewMap 
         #remove the old vision of the drone with the droneNo
@@ -62,22 +65,30 @@ class DroneModel():
                         if self.noisyMap[i][j]<1.1: self.noisyFireMap[i][j]=1
                         else:
                             self.noisyMap[i][j]-=1
+        
+    def updateNoisySpreadMap(self):
         #loop through noisySpreadMap and multiply noisyMap to it
         for i in range(0,self.n):
             for j in range(0,self.m):
                 if(self.viewMap[i][j]==0): self.noisySpreadMap[i][j] = self.spreadMap[i][j] * self.noisyMap[i][j]
+    
     def move(self, newSpreadMap):
         self.spreadMap=newSpreadMap
         #for each drone move it down by 1 until it has moved a distance of MOVERANGE
-        for j in range(1, self.droneNumber+1):
-            ypos = self.dronePositions[j][0]
-            xpos = self.dronePositions[j][1]
-            direction = self.dronePositions[j][2]
-            if direction == (1,0):
-                self.moveDown(ypos, xpos, j)
+        if(self.droneNumber > 0):
+            for j in range(1, self.droneNumber+1):
+                ypos = self.dronePositions[j][0]
+                xpos = self.dronePositions[j][1]
+                direction = self.dronePositions[j][2]
+                if direction == (1,0):
+                    self.moveDown(ypos, xpos, j)
 
-            elif direction == (-1,0):
-                self.moveUp(ypos, xpos, j)
+                elif direction == (-1,0):
+                    self.moveUp(ypos, xpos, j)
+            
+                self.updateNoisySpreadMap()
+        else:
+            self.updateNoisySpreadMap()
 
     def moveDown(self, ypos,  xpos, droneNo):
         remainingMoves = self.MOVERANGE
