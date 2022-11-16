@@ -6,7 +6,7 @@ from matplotlib import colors
 import numpy as np
 
 model = CombustionModel(128, 128, 120, False)
-prediction_model = CombustionModel(128, 128, 120, True, 0)
+prediction_model = CombustionModel(128, 128, 120, True, 5)
 log = Log()
 timecap = 1*60*60
 

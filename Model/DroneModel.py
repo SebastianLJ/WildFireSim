@@ -33,7 +33,7 @@ class DroneModel():
         #set noisyspreadmapm noisyfiremap equal to spreadmap, firemap but with noise
         for i in range(0,self.n):
             for j in range(0,self.m):
-                self.noisyMap[i][j] = np.random.uniform(0, 1)
+                self.noisyMap[i][j] = np.random.uniform(0.8, 1.2)
         #loop through noisySpreadMap and multiply noisyMap with spreadmap
         for i in range(0,self.n):
             for j in range(0,self.m):
@@ -60,11 +60,11 @@ class DroneModel():
                     if(self.noisyMap[i][j] < 1):
                         if(self.noisyMap[i][j]>0.9): self.noisyMap[i][j]=1
                         else:
-                            self.noisyMap[i][j]+=0.1
+                            self.noisyMap[i][j]+=0.2
                     else:
-                        if self.noisyMap[i][j]<1.1: self.noisyFireMap[i][j]=1
+                        if self.noisyMap[i][j]<1.1: self.noisyMap[i][j]=1
                         else:
-                            self.noisyMap[i][j]-=1
+                            self.noisyMap[i][j]-=0.2
         
         self.updateNoisySpreadMap()
         self.updateNoisyFireMap()
