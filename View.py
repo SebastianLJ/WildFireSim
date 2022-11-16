@@ -6,7 +6,7 @@ from matplotlib import colors
 import numpy as np
 
 model = CombustionModel(128, 128, 120, False)
-prediction_model = CombustionModel(128, 128, 120, True, 10)
+prediction_model = CombustionModel(128, 128, 120, True, 15)
 log = Log()
 
 colors_list_fire = [(157/255, 69/255, 49/255), (0, 0, 0, 0), 'brown', (252/255,100/255,0/255)]
@@ -41,7 +41,7 @@ def animate(i):
 # Bind our grid to the identifier X in the animate function's namespace.
 animate.X = model.FireModel.fireMap
 # Interval between frames (ms). 
-interval = 200
+interval = 1
 model.FireModel.start_fire(int(model.n / 2)+3, int(model.m / 2)+3)
 prediction_model.FireModel.start_fire(int(model.n / 2)+3, int(model.m / 2)+3)
 log.add(model.time, model.FireModel.fireMap, prediction_model.FireModel.fireMap)
