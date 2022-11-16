@@ -66,6 +66,14 @@ class DroneModel():
                         else:
                             self.noisyMap[i][j]-=1
         
+        self.updateNoisySpreadMap()
+        self.updateNoisyFireMap()
+        
+    def updateNoisyFireMap(self):
+        #loop through noisyFireMap and multiply noisyMap with firemap
+        for i in range(0,self.n):
+            for j in range(0,self.m):
+                self.noisyFireMap[i][j] = self.fireMap[i][j] * self.noisyMap[i][j]
     def updateNoisySpreadMap(self):
         #loop through noisySpreadMap and multiply noisyMap to it
         for i in range(0,self.n):
@@ -86,9 +94,9 @@ class DroneModel():
                 elif direction == (-1,0):
                     self.moveUp(ypos, xpos, j)
             
-                self.updateNoisySpreadMap()
         else:
             self.updateNoisySpreadMap()
+            self.updateNoisyFireMap()
 
     def moveDown(self, ypos,  xpos, droneNo):
         remainingMoves = self.MOVERANGE
