@@ -32,7 +32,6 @@ def animate(i):
     prediction_model.spread(model.spreadMap)
     log.add(model.time, model.FireModel.fireMap, prediction_model.FireModel.fireMap)
     animate.X = model.FireModel.fireMap
-    print(model.time/60/60)
     if(model.FireModel.isFireDone()):
         log.write(model.seed, model.n, model.m, prediction_model.droneCount)
         im.set_data(animate.X)
