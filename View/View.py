@@ -18,6 +18,7 @@ sys.path.append(parentdir)
 # Module
 from Model import EcoModel
 from Model import CombustionModel
+from Model import Log
 
 colors_list_fire = [(157/255, 69/255, 49/255), (0, 0, 0, 0), 'brown', (252/255,100/255,0/255)]
 colors_list_spread = [(156/255, 212/255, 226/255), (138/255, 181/255, 73/255), (95/255, 126/255, 48/255), (186/255, 140/255, 93/255), (41/255, 150/255, 23/255)]
@@ -31,10 +32,7 @@ norm_spread = colors.BoundaryNorm(bounds_spread, cmap_spread.N)
  # Use Tkinter Agg
 use_agg('TkAgg')   
 
-def animate(i):
-    im.set_data(animate.X)
-    model.spread()
-    animate.X = model.FireModel.fireMap
+
 
 # water : #9cd4e2
 # grass : #8ab549
@@ -45,11 +43,11 @@ def animate(i):
 def create_window():
     AppFont = 'Any 12'
     sg.theme('DarkAmber')
-    legend_col = [[sg.Text('Water'),sg.Button(size=(2,1),button_color="#0073ad")],
-                [sg.Text('Grass'),sg.Button(size=(2,1),button_color="#41bf02")],
-                [sg.Text('Shrub'),sg.Button(size=(2,1),button_color="#2f8a01")],
-                [sg.Text('Trees'),sg.Button(size=(2,1),button_color="#1f5c01")],
-                [sg.Text('Ground'),sg.Button(size=(2,1),button_color="#6b6243")],
+    legend_col = [[sg.Text('Water'),sg.Button(size=(2,1),button_color="#d4f1f9 ")],
+                [sg.Text('Grass'),sg.Button(size=(2,1),button_color="#509e02")],
+                [sg.Text('Shrub'),sg.Button(size=(2,1),button_color="#7ca814")],
+                [sg.Text('Trees'),sg.Button(size=(2,1),button_color="#355426 ")],
+                [sg.Text('Ground'),sg.Button(size=(2,1),button_color="#8F653F")],
                 
     ]
 
@@ -86,7 +84,7 @@ def create_window():
 
 def color_terrain_map(terrain_map):
         # Water , Grass , Tree , Ground , Shrub
-        colors = np.array([[0, 115, 173], [65, 191, 2], [31, 92, 1], [107, 98, 67], [47, 138, 1]], dtype=np.uint8)
+        colors = np.array([[212,241,249], [80, 158, 2], [37, 82, 16], [143, 101, 63], [124, 168, 20]], dtype=np.uint8)
         image = colors[terrain_map.reshape(-1)].reshape(terrain_map.shape+(3,))
         return image
 
@@ -113,11 +111,26 @@ def clear_plot(index):
     ax.cla()
     ax.set_axis_off()
     fig.canvas.draw() 
+    
+    
+# The animation function: called to produce a frame for each generation.
+def animate(i,im,model,prediction_model):
+    im.set_data(animate.X)
+    model.spread()
+    prediction_model.spread(model.spreadMap)
+    #log.add(model.time, model.FireModel.fireMap, prediction_model.FireModel.fireMap)
+    animate.X = model.FireModel.fireMap
+    print(model.time/60/60)
+    # if(model.FireModel.isFireDone()):
+    #     log.write(model.seed, model.n, model.m, prediction_model.droneCount)
+    #     im.set_data(animate.X)
+    #     anim.event_source.stop()
+
 
 if __name__=="__main__":
     n=128
     m=128
-
+    animation_flag=True
     title1="Real World Model"
     title2="Predicted Model"
     # Generate window
@@ -161,19 +174,32 @@ if __name__=="__main__":
             if event == '-START-':
                 if generated_flag:
                     simulation_start=True
-                    
-                    model = CombustionModel(n, m, 1, False)
-                    window['-WINDSPEED-'].update(model.WindModel.windSpeed*30)
-                    window['-WINDDIR-'].update(model.WindModel.windDirection)
-                    
-                    animate.X = model.FireModel.fireMap
-                    interval = 100
-                    model.FireModel.start_fire(int(model.n / 2), int(model.m / 2))
+                    model = CombustionModel(128, 128, selected_seed, False)
+                    prediction_model = CombustionModel(128, 128, selected_seed, True, 0)
+                    log = Log()
+                    fig = plt.figure(figsize=(25 / 3, 6.25))
+                    ax = fig.add_subplot(111)
+                    ax.set_axis_off()
+                    fig.tight_layout()
+                    fig.canvas.toolbar_visible=False
+                    model.seed=selected_seed
+                    ax.imshow(test_terrain.terrainMap, cmap=cmap_spread, norm=norm_spread)
+                    im = ax.imshow(model.FireModel.fireMap, cmap=cmap_fire, norm=norm_fire)  # , interpolation='nearest')
 
-                    window['-TIME-'].update(model.time)
-                    diff='0'
-                    window['-MODELDIFF-'].update(diff)
-                   
+
+                    # Bind our grid to the identifier X in the animate function's namespace.
+                    animate.X = model.FireModel.fireMap
+                    # Interval between frames (ms). 
+                    interval = 100
+                    model.FireModel.start_fire(int(model.n / 2)-26, int(model.m / 2)+3)
+                    prediction_model.FireModel.start_fire(int(model.n / 3), int(model.m / 3))
+                    log.add(model.time, model.FireModel.fireMap, prediction_model.FireModel.fireMap)
+                    anim = animation.FuncAnimation(fig, animate, interval=interval, frames=300, fargs=(im,model,prediction_model))
+                    # anim.save("forest_fire.mp4")
+
+                    fig.show()
+
+                    
                 print("Simulation Started")
             if event == '-STOP-':
                 simulation_start=False

@@ -47,8 +47,8 @@ class EcoModel():
         self.m = m
         self.seed = seed
         self.water_thresh=0.2
-        self.tree_thresh=0.1
-        self.shrub_thresh=0.15
+        self.tree_thresh=0.02
+        self.shrub_thresh=0.10
         np.random.seed(self.seed)
         random.seed(self.seed)
         # Generation of random map
@@ -73,7 +73,7 @@ class EcoModel():
         self.terrainMap[self.noise_map<water_threshold]=self.WATER
     
     def add_trees(self,tree_threshold):
-        potential_tree=((self.noise_map-tree_threshold)/(1-tree_threshold))**2
+        potential_tree=((self.noise_map-tree_threshold)/(1-tree_threshold))**2*0.9
         tree_mask = (self.noise_map > tree_threshold)*(np.random.rand(self.n,self.m)<potential_tree)
         self.terrainMap[tree_mask]=self.TREE
     
@@ -82,7 +82,7 @@ class EcoModel():
         self.terrainMap[ground_mask]=self.BARE_GROUND
 
     def add_shrub(self, shrub_threshold):
-        potential_shrub=((self.noise_map-shrub_threshold)/(1-shrub_threshold))**2*0.3
+        potential_shrub=((self.noise_map-shrub_threshold)/(1-shrub_threshold))**7*0.3
         shrub_mask = (self.noise_map > shrub_threshold)*(np.random.rand(self.n,self.m)<potential_shrub)
         self.terrainMap[shrub_mask]=self.SHRUB
 
