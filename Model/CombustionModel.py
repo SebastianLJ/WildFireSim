@@ -28,7 +28,6 @@ class CombustionModel():
         self.EcoModel = EcoModel(self.n, self.m, self.seed)
         self.FireModel = FireModel(self.n, self.m, self.seed)
         self.WindModel = WindModel(self.n, self.m, self.seed)
-
         # generate terrain
         self.EcoModel.generate_terrain()
         # generate spread map
@@ -54,7 +53,7 @@ class CombustionModel():
         for i in range(0, len(self.FireModel.fireMap)):
             for j in range(0, len(self.FireModel.fireMap[i])):
                 if self.FireModel.fireMap[i][j] == self.FireModel.BURNING and self.spreadMap[i][j] >= 1:
-                    neighbors = self.get_neighbourhood(1, i, j, self.spreadMap)
+                    neighbors = self.get_neighbourhood_with_wind(i, j, self.spreadMap)
                     for k in range(0, len(neighbors)):
                         for l in range(0, len(neighbors[k])):
                             if i+(k-1) >= 0 and i+(k-1) < self.n and j+l-1 >= 0 and j+l-1 < self.m:
@@ -82,12 +81,48 @@ class CombustionModel():
                         self.burnDownMap[i][j] = 0
 
     def get_neighbourhood_with_wind(self, row_number, column_number, map):
+        wind_speed = 0
+        if (self.WindModel.windSpeed < 0.3):
+            wind_speed = 1
+        elif (self.WindModel.windSpeed < 0.6):
+            wind_speed = 2
+        else:
+            wind_speed = 3
         if self.WindModel.windDirection == self.WindModel.NONE:
             return self.get_neighbourhood(1, row_number, column_number, map)
         elif self.WindModel.windDirection == self.WindModel.N:
             return [[map[i][j] if  i >= 0 and i < len(map) and j >= 0 and j < len(map[0]) else 0
-            for j in range(column_number-1, column_number+2)]
-                for i in range(row_number-1, row_number)]
+            for j in range(column_number-2, column_number+1)]
+                for i in range(row_number-2-wind_speed, row_number+1)]
+        elif self.WindModel.windDirection == self.WindModel.NE:
+            return [[map[i][j] if  i >= 0 and i < len(map) and j >= 0 and j < len(map[0]) else 0
+            for j in range(column_number-2, column_number+1+wind_speed)]
+                for i in range(row_number-2-wind_speed, row_number+1)]
+        elif self.WindModel.windDirection == self.WindModel.E:
+            return [[map[i][j] if  i >= 0 and i < len(map) and j >= 0 and j < len(map[0]) else 0
+            for j in range(column_number-2, column_number+1+wind_speed)]
+                for i in range(row_number-2, row_number+1)]
+        elif self.WindModel.windDirection == self.WindModel.SE:
+            return [[map[i][j] if  i >= 0 and i < len(map) and j >= 0 and j < len(map[0]) else 0
+            for j in range(column_number-2-wind_speed, column_number+1+wind_speed)]
+                for i in range(row_number-2, row_number+wind_speed+1)]
+        elif self.WindModel.windDirection == self.WindModel.S:
+            return [[map[i][j] if  i >= 0 and i < len(map) and j >= 0 and j < len(map[0]) else 0
+            for j in range(column_number-2-wind_speed, column_number+1)]
+                for i in range(row_number-2, row_number+wind_speed+1)]
+        elif self.WindModel.windDirection == self.WindModel.SW:
+            return [[map[i][j] if  i >= 0 and i < len(map) and j >= 0 and j < len(map[0]) else 0
+            for j in range(column_number-2-wind_speed, column_number+1)]
+                for i in range(row_number-2, row_number+wind_speed+1)]
+        elif self.WindModel.windDirection == self.WindModel.W:
+            return [[map[i][j] if  i >= 0 and i < len(map) and j >= 0 and j < len(map[0]) else 0
+            for j in range(column_number-2-wind_speed, column_number+1)]
+                for i in range(row_number-2, row_number+1)]
+        elif self.WindModel.windDirection == self.WindModel.NW:
+            return [[map[i][j] if  i >= 0 and i < len(map) and j >= 0 and j < len(map[0]) else 0
+            for j in range(column_number-2-wind_speed, column_number+1)]
+                for i in range(row_number-2-wind_speed, row_number+1)]
+
 
     def get_neighbourhood(self, radius, row_number, column_number, map):
         return [[map[i][j] if  i >= 0 and i < len(map) and j >= 0 and j < len(map[0]) else 0
