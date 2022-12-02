@@ -13,8 +13,11 @@ class WindModel():
         self.windDirection = self.N
         self.windSpeed = random.random()
         #self.generate_wind_vector()
-        self.wind_vector = (-1,-1)
+        self.wind_vector = (1,1)
         print("Wind vector: ", self.wind_vector)
+        print("Vector angle: ", self.get_wind_vector_angle())
+        print("Wind angle min: ", self.get_wind_angle_min())
+        print("Wind angle max: ", self.get_wind_angle_max())
         print("Wind direction: ", self.windDirection)
         print("Wind speed: ", self.windSpeed*30, "m/s")
         print("Normalized Wind speed: ", self.windSpeed)
@@ -52,7 +55,9 @@ class WindModel():
 
     def get_wind_vector_angle(self):
         vector_angle = np.arctan2(self.wind_vector[1], self.wind_vector[0])
-        return vector_angle
+        vector_angle %= 2*np.pi
+        degs = np.degrees(vector_angle)
+        return degs
 
     def get_wind_speed_factor(self):
         return 110 - self.windSpeed

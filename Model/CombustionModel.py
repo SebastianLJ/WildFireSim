@@ -57,7 +57,7 @@ class CombustionModel():
                     for k in range(0, self.n):
                         for l in range(0, self.m):
                             if (mask[k][l] and self.spreadMap[k][l] > 0 and 
-                                self.angle_in_range(self.get_angle(j, i, l, k), self.WindModel.get_wind_angle_min(), self.WindModel.get_wind_angle_max()) and
+                                self.angle_in_range(self.get_angle(i, j, k, l), self.WindModel.get_wind_angle_min(), self.WindModel.get_wind_angle_max()) and
                                 self.FireModel.fireMap[k][l] == self.FireModel.UNBURNT):
                                     spread.append([k,l])
                 elif self.FireModel.fireMap[i][j] == self.FireModel.BURNING:
