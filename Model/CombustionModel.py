@@ -53,12 +53,11 @@ class CombustionModel():
         for i in range(0, len(self.FireModel.fireMap)):
             for j in range(0, len(self.FireModel.fireMap[i])):
                 if self.FireModel.fireMap[i][j] == self.FireModel.BURNING and self.spreadMap[i][j] >= 1:
-                    neighbors = self.get_neighbourhood_with_wind(i, j, self.spreadMap)
-                    for k in range(0, len(neighbors)):
-                        for l in range(0, len(neighbors[k])):
-                            if i+(k-1) >= 0 and i+(k-1) < self.n and j+l-1 >= 0 and j+l-1 < self.m:
-                                    if self.spreadMap[i+k-1][j+l-1] > 0 and self.FireModel.fireMap[i+k-1][j+l-1] == self.FireModel.UNBURNT:
-                                        spread.append((i+k-1,j+l-1))
+                    mask = self.get_neighbourhood_mask(i, j, 2, self.spreadMap)
+                    for k in range(0, self.n):
+                        for l in range(0, self.m):
+                            if mask[k][l] and self.spreadMap[k][l] > 0 and self.FireModel.fireMap[k][l] == self.FireModel.UNBURNT:
+                                spread.append([k,l])
                 elif self.FireModel.fireMap[i][j] == self.FireModel.BURNING:
                     self.spreadMap[i][j] += (self.EcoModel.get_spread_rate(i, j) * self.WindModel.windSpeed)
         for pair in spread:
@@ -80,11 +79,11 @@ class CombustionModel():
                         self.FireModel.fireMap[i][j] = self.FireModel.BURNT
                         self.burnDownMap[i][j] = 0
 
-    def get_neighbourhood_circle(self, row_number, column_number, radius, map):
+    def get_neighbourhood_mask(self, row_number, column_number, radius, map):
         x = np.arange(0, self.m)
         y = np.arange(0, self.n)
         mask = (x[np.newaxis,:]-column_number)**2 + (y[:,np.newaxis]-row_number)**2 < radius**2
-        return map[mask]
+        return mask
         
     def get_neighbourhood_with_wind(self, row_number, column_number, map):
         wind_speed = 0
@@ -142,6 +141,5 @@ if __name__=="__main__":
     np.set_printoptions(threshold=sys.maxsize)
     test_model = CombustionModel(n=32, m=32, seed=1, isPredictionMode=False)
     test_model.FireModel.start_fire(int(test_model.n/2), int(test_model.m/2))
-    #print(test_model.spreadMap[0])
-    #test_model.spread()
+    print(*test_model.get_neighbourhood_mask(4,4,2, test_model.spreadMap))
 
