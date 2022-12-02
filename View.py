@@ -5,7 +5,7 @@ from matplotlib import animation
 from matplotlib import colors
 import numpy as np
 
-model = CombustionModel(128, 128, 120, False)
+model = CombustionModel(128, 128, 1, False)
 prediction_model = CombustionModel(128, 128, 120, True, 0)
 log = Log()
 
@@ -29,7 +29,7 @@ im = ax.imshow(model.FireModel.fireMap, cmap=cmap_fire, norm=norm_fire)  # , int
 def animate(i):
     im.set_data(animate.X)
     model.spread()
-    prediction_model.spread(model.spreadMap)
+    #prediction_model.spread(model.spreadMap)
     #log.add(model.time, model.FireModel.fireMap, prediction_model.FireModel.fireMap)
     animate.X = model.FireModel.fireMap
     # if(model.FireModel.isFireDone()):
