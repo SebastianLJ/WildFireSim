@@ -53,7 +53,7 @@ class CombustionModel():
         for i in range(0, len(self.FireModel.fireMap)):
             for j in range(0, len(self.FireModel.fireMap[i])):
                 if self.FireModel.fireMap[i][j] == self.FireModel.BURNING and self.spreadMap[i][j] >= 1:
-                    mask = self.get_neighbourhood_mask(i, j, 2, self.spreadMap)
+                    mask = self.get_neighbourhood_mask(i, j, self.WindModel.get_wind_radius(), self.spreadMap)
                     for k in range(0, self.n):
                         for l in range(0, self.m):
                             if (mask[k][l] and self.spreadMap[k][l] > 0 and 
@@ -88,7 +88,7 @@ class CombustionModel():
         return mask
 
     def angle_in_range(self, angle, lower, upper):
-        return (angle - lower) % 360 <= (upper - lower) % 360
+        return (angle - lower) % 360 <= (upper - lower) % 360 or lower == upper
 
     def get_angle(self, cx, cy, px, py):
         dx = px - cx
