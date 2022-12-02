@@ -80,6 +80,12 @@ class CombustionModel():
                         self.FireModel.fireMap[i][j] = self.FireModel.BURNT
                         self.burnDownMap[i][j] = 0
 
+    def get_neighbourhood_circle(self, row_number, column_number, radius, map):
+        x = np.arange(0, self.m)
+        y = np.arange(0, self.n)
+        mask = (x[np.newaxis,:]-column_number)**2 + (y[:,np.newaxis]-row_number)**2 < radius**2
+        return map[mask]
+        
     def get_neighbourhood_with_wind(self, row_number, column_number, map):
         wind_speed = 0
         if (self.WindModel.windSpeed < 0.3):
