@@ -57,9 +57,9 @@ class CombustionModel():
                     for k in range(0, self.n):
                         for l in range(0, self.m):
                             if (mask[k][l] and self.spreadMap[k][l] > 0 and 
-                                self.get_angle(i, j, k, l) <= 45 and
+                                self.angle_in_range(self.get_angle(j, i, l, k), self.WindModel.get_wind_angle_min(), self.WindModel.get_wind_angle_max()) and
                                 self.FireModel.fireMap[k][l] == self.FireModel.UNBURNT):
-                                spread.append([k,l])
+                                    spread.append([k,l])
                 elif self.FireModel.fireMap[i][j] == self.FireModel.BURNING:
                     self.spreadMap[i][j] += (self.EcoModel.get_spread_rate(i, j) * self.WindModel.windSpeed)
         for pair in spread:
@@ -86,6 +86,9 @@ class CombustionModel():
         y = np.arange(0, self.n)
         mask = ((x[np.newaxis,:]-column_number)**2 + (y[:,np.newaxis]-row_number)**2 < radius**2)
         return mask
+
+    def angle_in_range(self, angle, lower, upper):
+        return (angle - lower) % 360 <= (upper - lower) % 360
 
     def get_angle(self, cx, cy, px, py):
         dx = px - cx
@@ -151,4 +154,5 @@ if __name__=="__main__":
     np.set_printoptions(threshold=sys.maxsize)
     test_model = CombustionModel(n=32, m=32, seed=1, isPredictionMode=False)
     test_model.FireModel.start_fire(int(test_model.n/2), int(test_model.m/2))
+    print(test_model.get_angle(1,1,2,1))
 
