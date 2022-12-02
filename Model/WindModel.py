@@ -11,9 +11,10 @@ class WindModel():
         random.seed(self.seed)
         #self.windDirection = random.randrange(0,8)
         self.windDirection = self.N
-        self.windSpeed = random.random()
+        #self.windSpeed = random.random()
+        self.windSpeed = 0.6
         #self.generate_wind_vector()
-        self.wind_vector = (-1,-1)
+        self.wind_vector = (0,1)
         print("Wind vector: ", self.wind_vector)
         print("Vector angle: ", self.get_wind_vector_angle())
         print("Wind angle min: ", self.get_wind_angle_min())
@@ -72,15 +73,15 @@ class WindModel():
 
     def get_wind_speed_factor(self):
         if self.windSpeed == 0:
-            return 0
+            return 360
         elif self.windSpeed < 0.25:
-            return 150
+            return 250
         elif self.windSpeed < 0.5:
-            return 120
+            return 140
         elif self.windSpeed < 0.75:
-            return 90
+            return 80
         else: 
-            return 60
+            return 50
 
     def get_wind_angle_min(self):
         return (self.get_wind_vector_angle() - self.get_wind_speed_factor() / 2) % 360
