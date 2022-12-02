@@ -56,7 +56,9 @@ class CombustionModel():
                     mask = self.get_neighbourhood_mask(i, j, 2, self.spreadMap)
                     for k in range(0, self.n):
                         for l in range(0, self.m):
-                            if mask[k][l] and self.spreadMap[k][l] > 0 and self.FireModel.fireMap[k][l] == self.FireModel.UNBURNT:
+                            if (mask[k][l] and self.spreadMap[k][l] > 0 and 
+                                self.get_angle(i, j, k, l) <= 45 and
+                                self.FireModel.fireMap[k][l] == self.FireModel.UNBURNT):
                                 spread.append([k,l])
                 elif self.FireModel.fireMap[i][j] == self.FireModel.BURNING:
                     self.spreadMap[i][j] += (self.EcoModel.get_spread_rate(i, j) * self.WindModel.windSpeed)
@@ -82,8 +84,16 @@ class CombustionModel():
     def get_neighbourhood_mask(self, row_number, column_number, radius, map):
         x = np.arange(0, self.m)
         y = np.arange(0, self.n)
-        mask = (x[np.newaxis,:]-column_number)**2 + (y[:,np.newaxis]-row_number)**2 < radius**2
+        mask = ((x[np.newaxis,:]-column_number)**2 + (y[:,np.newaxis]-row_number)**2 < radius**2)
         return mask
+
+    def get_angle(self, cx, cy, px, py):
+        dx = px - cx
+        dy = py - cy
+        rads = np.arctan2(dy,dx)
+        rads %= 2*np.pi
+        degs = np.degrees(rads)
+        return degs
         
     def get_neighbourhood_with_wind(self, row_number, column_number, map):
         wind_speed = 0
@@ -141,5 +151,4 @@ if __name__=="__main__":
     np.set_printoptions(threshold=sys.maxsize)
     test_model = CombustionModel(n=32, m=32, seed=1, isPredictionMode=False)
     test_model.FireModel.start_fire(int(test_model.n/2), int(test_model.m/2))
-    print(*test_model.get_neighbourhood_mask(4,4,2, test_model.spreadMap))
 
