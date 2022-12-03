@@ -2,16 +2,16 @@ import numpy as np
 import random
 
 class WindModel():
-    NONE, N, NE, E, SE, S, SW, W, NW = range(9)
     def __init__(self, n, m, seed):
         self.n = n
         self.m = m
         self.seed = seed
         np.random.seed(self.seed)
         random.seed(self.seed)
-        self.windDirection = self.N
         self.windSpeed = random.random()
         self.generate_wind_vector()
+
+    def print_settings(self):
         print("Wind vector: ", self.wind_vector)
         print("Vector angle: ", self.get_wind_vector_angle())
         print("Wind angle min: ", self.get_wind_angle_min())
@@ -26,9 +26,9 @@ class WindModel():
         elif self.windSpeed < 0.5:
             return 2.5
         elif self.windSpeed < 0.75:
-            return 3.5
+            return 3
         else:
-            return 4
+            return 3.5
         
     def generate_wind_vector(self):
         a = np.random.uniform(-1, 1)

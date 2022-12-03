@@ -101,6 +101,13 @@ class CombustionModel():
     def get_terrainMap(self):
         return self.EcoModel.terrainMap
 
+    def set_start_fire(self, i, j):
+        if self.EcoModel.get_spread_rate(i, j) > 0:
+            self.FireModel.start_fire(i, j)
+        else:
+            raise Exception("Cannot start fire on water or earth")
+        
+
 if __name__=="__main__":
     np.set_printoptions(threshold=sys.maxsize)
     test_model = CombustionModel(n=32, m=32, seed=1, isPredictionMode=False)
