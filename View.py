@@ -7,7 +7,7 @@ import numpy as np
 
 
 n, m, seed = 64, 64, 5522
-droneCount = 10
+droneCount = 0
 model = CombustionModel(n, m, seed, False)
 model.WindModel.print_settings()
 prediction_model = CombustionModel(n, m, seed, True, droneCount)
@@ -36,7 +36,7 @@ def animate(i):
     log.add(model.time, model.FireModel.fireMap, prediction_model.FireModel.fireMap)
     animate.X = model.FireModel.fireMap
     if(model.FireModel.isFireDone()):
-        log.write(model.seed, model.n, model.m, prediction_model.droneCount)
+        log.write(model.seed, model.n, model.m, prediction_model.droneCount, customName='_highnoise')
         im.set_data(animate.X)
         anim.event_source.stop()
         print("log successfully written")
