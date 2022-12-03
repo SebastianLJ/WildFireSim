@@ -67,7 +67,7 @@ class DroneModel():
                         else:
                             self.noisyMap[i][j]+=0.1
                     else:
-                        if self.noisyMap[i][j]<1.1: self.noisyFireMap[i][j]=1
+                        if self.noisyMap[i][j]<1.1: self.noisyMap[i][j]=1
                         else:
                             self.noisyMap[i][j]-=0.1
  

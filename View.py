@@ -28,7 +28,6 @@ ax.set_axis_off()
 ax.imshow(model.EcoModel.terrainMap, cmap=cmap_spread, norm=norm_spread)
 im = ax.imshow(model.FireModel.fireMap, cmap=cmap_fire, norm=norm_fire)  # , interpolation='nearest')
 
-
 # The animation function: called to produce a frame for each generation.
 def animate(i):
     im.set_data(animate.X)
