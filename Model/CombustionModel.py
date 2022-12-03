@@ -53,12 +53,13 @@ class CombustionModel():
         for i in range(0, len(self.FireModel.fireMap)):
             for j in range(0, len(self.FireModel.fireMap[i])):
                 if self.FireModel.fireMap[i][j] == self.FireModel.BURNING and self.spreadMap[i][j] >= 1:
-                    neighbors = self.get_neighbourhood_with_wind(i, j, self.spreadMap)
-                    for k in range(0, len(neighbors)):
-                        for l in range(0, len(neighbors[k])):
-                            if i+(k-1) >= 0 and i+(k-1) < self.n and j+l-1 >= 0 and j+l-1 < self.m:
-                                    if self.spreadMap[i+k-1][j+l-1] > 0 and self.FireModel.fireMap[i+k-1][j+l-1] == self.FireModel.UNBURNT:
-                                        spread.append((i+k-1,j+l-1))
+                    mask = self.get_neighbourhood_mask(i, j, self.WindModel.get_wind_radius(), self.spreadMap)
+                    for k in range(0, self.n):
+                        for l in range(0, self.m):
+                            if (mask[k][l] and self.spreadMap[k][l] > 0 and 
+                                self.angle_in_range(self.get_angle(j, i, l, k), self.WindModel.get_wind_angle_min(), self.WindModel.get_wind_angle_max()) and
+                                self.FireModel.fireMap[k][l] == self.FireModel.UNBURNT):
+                                    spread.append([k,l])
                 elif self.FireModel.fireMap[i][j] == self.FireModel.BURNING:
                     self.spreadMap[i][j] += (self.EcoModel.get_spread_rate(i, j) * self.WindModel.windSpeed)
         for pair in spread:
@@ -80,62 +81,36 @@ class CombustionModel():
                         self.FireModel.fireMap[i][j] = self.FireModel.BURNT
                         self.burnDownMap[i][j] = 0
 
-    def get_neighbourhood_with_wind(self, row_number, column_number, map):
-        wind_speed = 0
-        if (self.WindModel.windSpeed < 0.3):
-            wind_speed = 1
-        elif (self.WindModel.windSpeed < 0.6):
-            wind_speed = 2
-        else:
-            wind_speed = 3
-        if self.WindModel.windDirection == self.WindModel.NONE:
-            return self.get_neighbourhood(1, row_number, column_number, map)
-        elif self.WindModel.windDirection == self.WindModel.N:
-            return [[map[i][j] if  i >= 0 and i < len(map) and j >= 0 and j < len(map[0]) else 0
-            for j in range(column_number-2, column_number+1)]
-                for i in range(row_number-2-wind_speed, row_number+1)]
-        elif self.WindModel.windDirection == self.WindModel.NE:
-            return [[map[i][j] if  i >= 0 and i < len(map) and j >= 0 and j < len(map[0]) else 0
-            for j in range(column_number-2, column_number+1+wind_speed)]
-                for i in range(row_number-2-wind_speed, row_number+1)]
-        elif self.WindModel.windDirection == self.WindModel.E:
-            return [[map[i][j] if  i >= 0 and i < len(map) and j >= 0 and j < len(map[0]) else 0
-            for j in range(column_number-2, column_number+1+wind_speed)]
-                for i in range(row_number-2, row_number+1)]
-        elif self.WindModel.windDirection == self.WindModel.SE:
-            return [[map[i][j] if  i >= 0 and i < len(map) and j >= 0 and j < len(map[0]) else 0
-            for j in range(column_number-2-wind_speed, column_number+1+wind_speed)]
-                for i in range(row_number-2, row_number+wind_speed+1)]
-        elif self.WindModel.windDirection == self.WindModel.S:
-            return [[map[i][j] if  i >= 0 and i < len(map) and j >= 0 and j < len(map[0]) else 0
-            for j in range(column_number-2-wind_speed, column_number+1)]
-                for i in range(row_number-2, row_number+wind_speed+1)]
-        elif self.WindModel.windDirection == self.WindModel.SW:
-            return [[map[i][j] if  i >= 0 and i < len(map) and j >= 0 and j < len(map[0]) else 0
-            for j in range(column_number-2-wind_speed, column_number+1)]
-                for i in range(row_number-2, row_number+wind_speed+1)]
-        elif self.WindModel.windDirection == self.WindModel.W:
-            return [[map[i][j] if  i >= 0 and i < len(map) and j >= 0 and j < len(map[0]) else 0
-            for j in range(column_number-2-wind_speed, column_number+1)]
-                for i in range(row_number-2, row_number+1)]
-        elif self.WindModel.windDirection == self.WindModel.NW:
-            return [[map[i][j] if  i >= 0 and i < len(map) and j >= 0 and j < len(map[0]) else 0
-            for j in range(column_number-2-wind_speed, column_number+1)]
-                for i in range(row_number-2-wind_speed, row_number+1)]
+    def get_neighbourhood_mask(self, row_number, column_number, radius, map):
+        x = np.arange(0, self.m)
+        y = np.arange(0, self.n)
+        mask = ((x[np.newaxis,:]-column_number)**2 + (y[:,np.newaxis]-row_number)**2 < radius**2)
+        return mask
 
+    def angle_in_range(self, angle, lower, upper):
+        return (angle - lower) % 360 <= (upper - lower) % 360 or lower == upper
 
-    def get_neighbourhood(self, radius, row_number, column_number, map):
-        return [[map[i][j] if  i >= 0 and i < len(map) and j >= 0 and j < len(map[0]) else 0
-            for j in range(column_number-1-radius, column_number+radius)]
-                for i in range(row_number-1-radius, row_number+radius)]
+    def get_angle(self, cx, cy, px, py):
+        dx = px - cx
+        dy = py - cy
+        rads = np.arctan2(dy,dx)
+        rads %= 2*np.pi
+        degs = np.degrees(rads)
+        return degs
 
     def get_terrainMap(self):
         return self.EcoModel.terrainMap
+
+    def set_start_fire(self, i, j):
+        if self.EcoModel.get_spread_rate(i, j) > 0:
+            self.FireModel.start_fire(i, j)
+        else:
+            raise Exception("Cannot start fire on water or earth")
+        
 
 if __name__=="__main__":
     np.set_printoptions(threshold=sys.maxsize)
     test_model = CombustionModel(n=32, m=32, seed=1, isPredictionMode=False)
     test_model.FireModel.start_fire(int(test_model.n/2), int(test_model.m/2))
-    #print(test_model.spreadMap[0])
-    #test_model.spread()
+    print(test_model.get_angle(1,1,2,1))
 

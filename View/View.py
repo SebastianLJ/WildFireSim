@@ -21,7 +21,7 @@ from Model import CombustionModel
 from Model import Log
 
 colors_list_fire = [(157/255, 69/255, 49/255), (0, 0, 0, 0), 'brown', (252/255,100/255,0/255)]
-colors_list_spread = [(156/255, 212/255, 226/255), (138/255, 181/255, 73/255), (95/255, 126/255, 48/255), (186/255, 140/255, 93/255), (41/255, 150/255, 23/255)]
+colors_list_spread = [(156/255, 212/255, 226/255), (80/255, 158/255, 2/255), (37/255, 82/255, 16/255), (143/255, 101/255, 63/255), (124/255, 168/255, 20/255)]
 color_list_drone = [(0,0,0,0),'blue', 'blue', 'blue', (245/255, 245/255, 245/255, 1)]
 cmap_fire = colors.ListedColormap(colors_list_fire)
 cmap_spread = colors.ListedColormap(colors_list_spread)
@@ -35,23 +35,14 @@ norm_drone = colors.BoundaryNorm(bounds_drone, cmap_drone.N)
  # Use Tkinter Agg
 use_agg('TkAgg')   
 
-
-
-# water : #9cd4e2
-# grass : #8ab549
-# shrub : #5f7e30
-# ground : #ba8c5d
-# tree : #299617
-
 def create_window():
     AppFont = 'Any 12'
     sg.theme('DarkAmber')
-    legend_col = [[sg.Text('Water'),sg.Button(size=(2,1),button_color="#d4f1f9 ")],
+    legend_col = [[sg.Text('Water'),sg.Button(size=(2,1),button_color="#9cd4e2")],
                 [sg.Text('Grass'),sg.Button(size=(2,1),button_color="#509e02")],
                 [sg.Text('Shrub'),sg.Button(size=(2,1),button_color="#7ca814")],
                 [sg.Text('Trees'),sg.Button(size=(2,1),button_color="#355426 ")],
-                [sg.Text('Ground'),sg.Button(size=(2,1),button_color="#8F653F")],
-                
+                [sg.Text('Ground'),sg.Button(size=(2,1),button_color="#8f6542")],
     ]
 
     left_col = [[sg.Text('Seed'),sg.Input(key='-SEED-'),sg.Button('Generate Bio',key='-GENERATE-',enable_events=True)],
@@ -63,10 +54,10 @@ def create_window():
                     sg.Button('Stop',button_color='white on red',key='-STOP-'),],
                     [sg.Canvas(key='-Graph2-')],
                     [sg.Button('Exit',pad=((2,0),(5,0)),enable_events=True,key="-EXIT-"),
-                ]]
-    stat_col = [[sg.Text('Windspeed m/s:'),sg.Text('',key='-WINDSPEED-')],
+                ]] 
+    stat_col = [[sg.Text('Windspeed'),sg.Text('',key='-WINDSPEED-',text_color='black',background_color='white'), sg.Text("m/s")],
                 [sg.Text('Wind Direction:'),sg.Text('',key='-WINDDIR-')],
-                [sg.Text('Time Elapsed in Hours:'),sg.Text('',key='-TIME-')],
+                [sg.Text('Time Elapsed:'),sg.Text('',key='-TIME-',text_color='black',background_color='white'),sg.Text('hours')],
                 [sg.Text('Model Difference:'),sg.Text('',key='-MODELDIFF-')]]
 
     layout = [[sg.Column(legend_col,element_justification='r'),
@@ -87,7 +78,7 @@ def create_window():
 
 def color_terrain_map(terrain_map):
         # Water , Grass , Tree , Ground , Shrub
-        colors = np.array([[212,241,249], [80, 158, 2], [37, 82, 16], [143, 101, 63], [124, 168, 20]], dtype=np.uint8)
+        colors = np.array([[156,212,226], [80, 158, 2], [37, 82, 16], [143, 101, 63], [124, 168, 20]], dtype=np.uint8)
         image = colors[terrain_map.reshape(-1)].reshape(terrain_map.shape+(3,))
         return image
 
@@ -188,6 +179,8 @@ if __name__=="__main__":
                     im=color_terrain_map(test_terrain.terrainMap)
                     plot_figure(1,im, title=title1)
                     plot_figure(2,im, title=title2)
+                  
+                  
                     
             if event == '-SAVE-':
                 print("Saved Simulation to directory: _INSERT_DIRECTORY_")
@@ -217,7 +210,7 @@ if __name__=="__main__":
                     # Bind our grid to the identifier X in the animate function's namespace.
                     animate.X = model.FireModel.fireMap
                     # Interval between frames (ms). 
-                    interval = 100
+                    interval = 10
                     model.FireModel.start_fire(int(model.n / 2)-26, int(model.m / 2)+3)
                     prediction_model.FireModel.start_fire(int(model.n / 3), int(model.m / 3))
                     log.add(model.time, model.FireModel.fireMap, prediction_model.FireModel.fireMap)
