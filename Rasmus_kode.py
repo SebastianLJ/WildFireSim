@@ -5,8 +5,8 @@ from matplotlib import animation
 from matplotlib import colors
 import numpy as np
 
-model = CombustionModel(128, 128, 120, False)
-prediction_model = CombustionModel(128, 128, 120, True, 4)
+model = CombustionModel(32, 32, 1, False)
+prediction_model = CombustionModel(32, 32, 1, True, 4)
 
 log = Log()
 
