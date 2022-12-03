@@ -41,7 +41,7 @@ def animate(i):
     animate.Y = prediction_model.DroneModel.viewMap
     #print(model.time/60/60)
     if(model.FireModel.isFireDone()):
-        log.write(model.seed, model.n, model.m, prediction_model.droneCount)
+        #log.write(model.seed, model.n, model.m, prediction_model.droneCount)
         im.set_data(animate.X)
         anim.event_source.stop()
 
