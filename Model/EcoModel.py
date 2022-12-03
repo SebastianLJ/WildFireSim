@@ -31,7 +31,7 @@ def generate_perlin_noise_2d(shape, res):
     n1 = n01*(1-t[:,:,0]) + t[:,:,0]*n11
     return np.sqrt(2)*((1-t[:,:,1])*n0 + t[:,:,1]*n1)
         
-def generate_fractal_noise_2d(shape, res, octaves=1, persistence=0.5):
+def generate_fractal_noise_2d(shape, res, octaves=1000, persistence=0.5):
     noise = np.zeros(shape)
     frequency = 1
     amplitude = 1
@@ -49,7 +49,8 @@ class EcoModel():
         self.seed = seed
         self.water_thresh=0.2
         self.tree_thresh=0.56
-        self.shrub_thresh=[0.9, 0.96]
+        self.shrub_thresh=[0.4, 0.46]
+        self.ground_thresh=[0.35,0.36]
         np.random.seed(self.seed)
         random.seed(self.seed)
         # Generation of random map
@@ -59,11 +60,11 @@ class EcoModel():
         self.generate_noise()
 
     def generate_terrain(self):
-        self.add_ground()
-        self.add_trees(tree_threshold=self.tree_thresh)
-        self.add_shrub(shrub_threshold=self.shrub_thresh)
-        self.add_water(water_threshold=self.water_thresh)
-
+        self.add_trees(tree_threshold=self.tree_thresh ,noise_map=self.noise_map)
+        self.add_shrub(shrub_threshold=self.shrub_thresh,noise_map=self.noise_map)
+        self.add_water(water_threshold=self.water_thresh,noise_map=self.noise_map)
+        self.add_ground(noise_map=self.noise_map)
+            
     def generate_noise(self):
         noise = generate_fractal_noise_2d((self.n,self.m),(1,1),6)
         noise = (noise-noise.min())/(noise.max()-noise.min())
@@ -85,24 +86,27 @@ class EcoModel():
         G = np.fft.ifftshift(Gshift)
         g = np.abs(np.fft.ifft2(G))
         self.noise_map2 = g
-        
-        
-    def add_water(self,water_threshold):
-        self.terrainMap[self.noise_map_smooth<water_threshold]=self.WATER
+         
+    def add_water(self,water_threshold,noise_map):
+        self.terrainMap[noise_map<water_threshold]=self.WATER
     
-    def add_trees(self,tree_threshold):
-        tree_mask = (self.noise_map_smooth > tree_threshold)
+    def add_trees(self,tree_threshold,noise_map):
+        tree_mask = (noise_map > tree_threshold)
         self.terrainMap[tree_mask]=self.TREE
     
-    def add_ground(self):
-        ground_mask=(self.terrainMap==1)*(np.random.rand(self.n,self.m)<0.02)
+    def add_ground(self,noise_map):
+        # ground_mask=(self.terrainMap==1)*(np.random.rand(self.n,self.m)<0.02)
+        # self.terrainMap[ground_mask]=self.BARE_GROUND
+        ground_mask = (noise_map > self.ground_thresh[0])
+        ground_mask2 = (noise_map < self.ground_thresh[1])
+        ground_mask = ground_mask & ground_mask2
         self.terrainMap[ground_mask]=self.BARE_GROUND
     
-    def add_shrub(self, shrub_threshold):
+    def add_shrub(self, shrub_threshold,noise_map):
         #potential_shrub=((self.noise_map_smooth-shrub_threshold)/(1-shrub_threshold))**7*0.9
         #shrub_mask = (self.noise_map_smooth > shrub_threshold)*(np.random.rand(self.n,self.m)<potential_shrub)
-        shrub_mask = (self.noise_map_smooth > shrub_threshold[0])
-        shrub_mask2 = (self.noise_map_smooth < shrub_threshold[1])
+        shrub_mask = (noise_map > shrub_threshold[0])
+        shrub_mask2 = (noise_map < shrub_threshold[1])
         shrub_mask = shrub_mask & shrub_mask2
         self.terrainMap[shrub_mask]=self.SHRUB
 
