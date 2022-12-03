@@ -28,7 +28,7 @@ class WindModel():
         elif self.windSpeed < 0.75:
             return 3
         else:
-            return 3.5
+            return 4
         
     def generate_wind_vector(self):
         a = np.random.uniform(-1, 1)
