@@ -4,6 +4,7 @@ import numpy as np
 import random
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.ndimage import gaussian_filter
 
 def generate_perlin_noise_2d(shape, res):
     def f(t):
@@ -47,52 +48,70 @@ class EcoModel():
         self.m = m
         self.seed = seed
         self.water_thresh=0.2
-        self.tree_thresh=0.02
-        self.shrub_thresh=0.10
+        self.tree_thresh=0.56
+        self.shrub_thresh=[0.9, 0.96]
         np.random.seed(self.seed)
         random.seed(self.seed)
         # Generation of random map
         self.terrainMap = np.ones((self.n,self.m),dtype=np.int32)
         self.elevationMap = np.zeros((self.n,self.m), dtype=int)
         self.nonBurnMap = np.zeros((self.n,self.m), dtype=int)
+        self.generate_noise()
 
     def generate_terrain(self):
-        self.generate_noise()
+        self.add_ground()
         self.add_trees(tree_threshold=self.tree_thresh)
         self.add_shrub(shrub_threshold=self.shrub_thresh)
-        self.add_ground()
         self.add_water(water_threshold=self.water_thresh)
-        self.add_shrub(self.shrub_thresh)
 
     def generate_noise(self):
         noise = generate_fractal_noise_2d((self.n,self.m),(1,1),6)
         noise = (noise-noise.min())/(noise.max()-noise.min())
+        self.noise_map_smooth = gaussian_filter(noise,sigma=3)
         self.noise_map=noise
-    
+        F = np.fft.fft2(noise)
+        Fshift = np.fft.fftshift(F)
+        M,N = np.shape(F)
+        H = np.zeros((M,N),dtype=np.float32)
+        D0 = 10
+        for u in range(M):
+            for v in range(N):
+                D=np.sqrt((u-M/2)**2 + (v-N/2)**2)
+                if D <= D0:
+                    H[u,v]=1
+                else:
+                    H[u,v]=0
+        Gshift = Fshift * H 
+        G = np.fft.ifftshift(Gshift)
+        g = np.abs(np.fft.ifft2(G))
+        self.noise_map2 = g
+        
+        
     def add_water(self,water_threshold):
-        self.terrainMap[self.noise_map<water_threshold]=self.WATER
+        self.terrainMap[self.noise_map_smooth<water_threshold]=self.WATER
     
     def add_trees(self,tree_threshold):
-        potential_tree=((self.noise_map-tree_threshold)/(1-tree_threshold))**2*0.9
-        tree_mask = (self.noise_map > tree_threshold)*(np.random.rand(self.n,self.m)<potential_tree)
+        tree_mask = (self.noise_map_smooth > tree_threshold)
         self.terrainMap[tree_mask]=self.TREE
     
     def add_ground(self):
-        ground_mask=(self.terrainMap==1)*(np.random.rand(self.n,self.m)<0.1)
+        ground_mask=(self.terrainMap==1)*(np.random.rand(self.n,self.m)<0.02)
         self.terrainMap[ground_mask]=self.BARE_GROUND
-
+    
     def add_shrub(self, shrub_threshold):
-        potential_shrub=((self.noise_map-shrub_threshold)/(1-shrub_threshold))**7*0.3
-        shrub_mask = (self.noise_map > shrub_threshold)*(np.random.rand(self.n,self.m)<potential_shrub)
+        #potential_shrub=((self.noise_map_smooth-shrub_threshold)/(1-shrub_threshold))**7*0.9
+        #shrub_mask = (self.noise_map_smooth > shrub_threshold)*(np.random.rand(self.n,self.m)<potential_shrub)
+        shrub_mask = (self.noise_map_smooth > shrub_threshold[0])
+        shrub_mask2 = (self.noise_map_smooth < shrub_threshold[1])
+        shrub_mask = shrub_mask & shrub_mask2
         self.terrainMap[shrub_mask]=self.SHRUB
 
     def plot_terrain(self):
         plt.figure()
-        colors = np.array([[156, 212, 226], [138, 181, 73], [95, 126, 48], [186, 140, 93], [41, 150, 23]], dtype=np.uint8)
-        print(self.terrainMap)
+        colors = np.array([[212,241,249], [80, 158, 2], [37, 82, 16], [143, 101, 63], [124, 168, 20]], dtype=np.uint8)
+        # print(self.terrainMap)
         self.image = colors[self.terrainMap.reshape(-1)].reshape(self.terrainMap.shape+(3,))
         plt.imshow(self.image)
-
     
     
     def get_spread_rate(self, i, j):
@@ -122,12 +141,20 @@ class EcoModel():
             return 1
 
 if __name__=="__main__":
-    test_terrain=EcoModel(n=64,m=64,seed=4)
+    test_terrain=EcoModel(n=128,m=128,seed=2)
     test_terrain.generate_terrain()
     test_terrain.plot_terrain()
 
-    test_terrain2=EcoModel(n=64,m=64,seed=5)
-    test_terrain2.generate_terrain()
-    test_terrain2.plot_terrain()
 
+    
+    fig4 = plt.figure(facecolor='white')    
+    plt.subplot(131)
+    plt.imshow(test_terrain.noise_map, cmap='terrain')
+    plt.subplot(132)
+    plt.imshow(test_terrain.noise_map_smooth, cmap='terrain')
+    plt.subplot(133)
+    plt.imshow(test_terrain.noise_map2, cmap='terrain')
     plt.show()
+    
+
+    # plt.show()
