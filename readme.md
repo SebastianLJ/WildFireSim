@@ -6,5 +6,8 @@
 2. Run View.py
 `python ./View/View.py`
 3. Input seed
+![alt text](https://github.com/SebastianLJ/ff/blob/main/pictures/readme/step3.png?raw=true)
 4. Click 'Generate Bio'
+![alt text](https://github.com/SebastianLJ/ff/blob/main/pictures/readme/step4.png?raw=true)
 5. Click 'Start'
+![alt text](https://github.com/SebastianLJ/ff/blob/main/pictures/readme/step5.png?raw=true)
