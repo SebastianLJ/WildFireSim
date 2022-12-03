@@ -7,7 +7,7 @@ import numpy as np
 
 
 n, m, seed = 64, 64, 44
-droneCount = 0
+droneCount = 5
 model = CombustionModel(n, m, seed, False)
 model.WindModel.print_settings()
 prediction_model = CombustionModel(n, m, 22, True, droneCount)
@@ -48,7 +48,7 @@ animate.X = model.FireModel.fireMap
 # Interval between frames (ms). 
 interval = 100
 model.FireModel.start_fire(int(model.n / 2)+3, int(model.m / 2)+3)
-prediction_model.FireModel.start_fire(int(model.n / 2)+15, int(model.m / 2)+15)
+prediction_model.FireModel.start_fire(int(model.n / 2)+3, int(model.m / 2)+3)
 log.add(model.time, model.FireModel.fireMap, prediction_model.FireModel.fireMap)
 anim = animation.FuncAnimation(fig, animate, interval=interval, frames=300)
 # anim.save("forest_fire.mp4")
