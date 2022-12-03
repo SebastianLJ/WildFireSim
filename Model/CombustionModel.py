@@ -54,6 +54,9 @@ class CombustionModel():
             for j in range(0, len(self.FireModel.fireMap[i])):
                 if self.FireModel.fireMap[i][j] == self.FireModel.BURNING and self.spreadMap[i][j] >= 1:
                     mask = self.get_neighbourhood_mask(i, j, self.WindModel.get_wind_radius(), self.spreadMap)
+                    # continue if no unburnt cells in neighbourhood
+                    if np.count_nonzero(self.FireModel.fireMap[mask]) == self.FireModel.fireMap[mask].size:
+                        continue
                     for k in range(0, self.n):
                         for l in range(0, self.m):
                             if (mask[k][l] and self.spreadMap[k][l] > 0 and 

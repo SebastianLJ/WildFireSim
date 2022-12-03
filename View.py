@@ -5,7 +5,7 @@ from matplotlib import animation
 from matplotlib import colors
 import numpy as np
 
-model = CombustionModel(128, 128, 5, False)
+model = CombustionModel(128, 128, 23, False)
 model.WindModel.print_settings()
 prediction_model = CombustionModel(128, 128, 120, True, 0)
 log = Log()
@@ -43,7 +43,7 @@ def animate(i):
 animate.X = model.FireModel.fireMap
 # Interval between frames (ms). 
 interval = 100
-model.FireModel.start_fire(int(model.n / 2)+1, int(model.m / 2)+1)
+model.FireModel.start_fire(int(model.n / 2)-26, int(model.m / 2)+3)
 prediction_model.FireModel.start_fire(int(model.n / 2)+3, int(model.m / 2)+3)
 #log.add(model.time, model.FireModel.fireMap, prediction_model.FireModel.fireMap)
 anim = animation.FuncAnimation(fig, animate, interval=interval, frames=300)
