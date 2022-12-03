@@ -2,8 +2,8 @@ import numpy as np
 import random
  
 class DroneModel():
-    VIEWRANGE = 1 #need to ome up with better estimate. 
-    MOVERANGE = 7 #7.2 km/h
+    VIEWRANGE = 2 #need to ome up with better estimate. 
+    MOVERANGE = 3 #7.2 km/h
  
     def __init__(self, n, m, seed, spreadMap, fireMap, droneNumber):
         self.n = n
@@ -113,60 +113,82 @@ class DroneModel():
                         if i >= 0 and i < self.n:
                             self.droneMap[i-1][xpos].remove(droneNo) #remove the drone from the old position
                             self.droneMap[i][xpos].add(droneNo) #place the drone in the new position
-                            self.dronePositions[droneNo] = [i, xpos, (1,0)] #update the position of the drone
+                            self.dronePositions[droneNo][0]=i
+                            self.dronePositions[droneNo][1] = xpos
                             self.updateVision(i, xpos, droneNo) #update the vision of the drone
                         else: 
-                            if i-1==self.n-1 and xpos==self.m-1: #if the drone is at the bottom right corner
+                            if i-1+self.VIEWRANGE>=self.n-1 and xpos+self.VIEWRANGE>=self.m-1: #if the drone is at the bottom right corner
                                 self.dronePositions[droneNo][2] = (-1,-1)
+                                print("bottomright;")
                                 self.moveUp(i-1, xpos, droneNo,(ypos+remainingMoves)-i)
                                 break
-                            elif i-1==self.n-1 and xpos == 0:
+                            elif i-1>=self.n-1 and xpos-self.VIEWRANGE <= 0:
                                 self.dronePositions[droneNo][2] = (-1,1)
                                 self.moveUp(i-1, xpos, droneNo,ypos+remainingMoves-i) 
                                 break
-                            elif self.dronePositions == (1, -1): #direction is (1, -1) go left
+                            elif self.dronePositions[droneNo][2] == (1, -1): #direction is (1, -1) go left
                                 self.droneMap[i-1][xpos].remove(droneNo) #remove the drone from the map
-                                self.droneMap[i-1][xpos-1].add(droneNo) #place the drone in the new position
-                                self.dronePositions[droneNo] = [i-1, xpos-1, (-1,-1)]
-                                self.updateVision(i-1, xpos-1, droneNo)
-                                self.moveUp(i-1, xpos-1, droneNo,ypos+remainingMoves-i)
+                                self.droneMap[i-1][xpos-2*self.VIEWRANGE].add(droneNo) #place the drone in the new position
+                                self.dronePositions[droneNo] = [i-1, xpos-2*self.VIEWRANGE, (-1,-1)]
+                                self.updateVision(i-1, xpos-2*self.VIEWRANGE, droneNo)
+                                self.moveUp(i-1, xpos-2*self.VIEWRANGE, droneNo,ypos+remainingMoves-i)
                                 break
                             else: #direction is (1,1) go right
-                                self.droneMap[i-1][xpos].remove(droneNo) # remove the drone from the map
-                                self.droneMap[i-1][xpos + 1].add(droneNo) # place the drone in the new position
-                                self.dronePositions[droneNo] = [i-1, xpos + 1, (-1, 1)]
-                                self.updateVision(i-1, xpos + 1, droneNo)
-                                self.moveUp(i-1, xpos+1, droneNo, ypos+remainingMoves-i)
-                                break
+                                if self.dronePositions[droneNo][2]==(-1, -1):
+                                    self.droneMap[i-1][xpos].remove(droneNo)
+                                    self.droneMap[i-1][xpos - 2*self.VIEWRANGE].add(droneNo)
+                                    self.dronePositions[droneNo]=[i-1, xpos -2*self.VIEWRANGE, (-1, -1)]
+                                    self.updateVision(i-1, xpos-2*self.VIEWRANGE, droneNo)
+                                    self.moveUp(i-1, xpos-2*self.VIEWRANGE, droneNo)
+                                    break
+                                else:
+                                    self.droneMap[i-1][xpos].remove(droneNo) # remove the drone from the map
+                                    self.droneMap[i-1][xpos + 2*self.VIEWRANGE].add(droneNo) # place the drone in the new position
+                                    self.dronePositions[droneNo] = [i-1, xpos + 2*self.VIEWRANGE, (-1, 1)]
+                                    self.updateVision(i-1, xpos + 2*self.VIEWRANGE, droneNo)
+                                    self.moveUp(i-1, xpos+2*self.VIEWRANGE, droneNo, ypos+remainingMoves-i)
+                                    break
     def moveUp(self, ypos, xpos,droneNo, remainingMoves):
                 for i in range (ypos-1, ypos-remainingMoves, -1):
                     if i >= 0 and i < self.n:
                         self.droneMap[i+1][xpos].remove(droneNo) #remove the drone from the old position
                         self.droneMap[i][xpos].add(droneNo) #place the drone in the new position
-                        self.dronePositions[droneNo] = [i, xpos,(-1,0)]
+                        self.dronePositions[droneNo][0] = i
+                        self.dronePositions[droneNo][1] = xpos
                         self.updateVision(i, xpos, droneNo)
                     else:
-                           if i+1==0 and xpos==0: #if the drone is at the bottom left corner
+                           if i+1-self.VIEWRANGE<=0 and xpos-self.VIEWRANGE<=0: #if the drone is at the top left corner
                                 self.dronePositions[droneNo][2] = (1,1)
                                 self.moveDown(i + 1, xpos, droneNo, abs((ypos-remainingMoves)-i))
                                 break
-                           elif i+1==0 and xpos == self.m-1:
-                                self.dronePositions[droneNo][2]=(1,-1)
-                                self.moveDown(i + 1, xpos, droneNo, abs((ypos-remainingMoves)-i))
-                                break
-                           elif self.dronePositions == (-1, -1): #direction is (-1, -1) go left
+                           elif i+1-self.VIEWRANGE<=0 and xpos+self.VIEWRANGE >= self.m-1:
+                                if self.dronePositions[droneNo][2][1] == -1: ##going tothe left
+                                    self.droneMap[i+1][xpos].remove(droneNo) #remove the drone from the map
+                                    self.droneMap[i+1][xpos-2*self.VIEWRANGE].add(droneNo) #place the drone in the new position
+                                    self.dronePositions[droneNo] = [i+1, xpos-2*self.VIEWRANGE, (1,-1)]
+                                    self.updateVision(i+1, xpos-2*self.VIEWRANGE, droneNo)
+                                    self.moveDown(i+1, xpos - 2 * self.VIEWRANGE, droneNo, abs((ypos-remainingMoves)-i))
+                                    break
+                                else:
+                                    self.droneMap[i+1][xpos].remove(droneNo)
+                                    self.droneMap[i+1][xpos+2*self.VIEWRANGE].add(droneNo)
+                                    self.dronePositions[droneNo]=[i+1, xpos + 2* self.VIEWRANGE, (1,1)]
+                                    self.updateVision(i+1, xpos + 2 * self.VIEWRANGE, droneNo)
+                                    self.moveDown(i + 1, xpos + 2 * self.VIEWRANGE, droneNo, abs((ypos-remainingMoves)-i))
+                                    break
+                           elif self.dronePositions[droneNo][2] == (-1, -1): #direction is (-1, -1) go left
                                 self.droneMap[i+1][xpos].remove(droneNo) #remove the drone from the map
-                                self.droneMap[i+1][xpos-1].add(droneNo) #place the drone in the new position
-                                self.dronePositions[droneNo] = [i+1, xpos-1, (1,-1)]
-                                self.updateVision(i+1, xpos-1, droneNo)
-                                self.moveDown(i+1, xpos - 1, droneNo, abs((ypos-remainingMoves)-i))
+                                self.droneMap[i+1][xpos-2*self.VIEWRANGE].add(droneNo) #place the drone in the new position
+                                self.dronePositions[droneNo] = [i+1, xpos-2*self.VIEWRANGE, (1,-1)]
+                                self.updateVision(i+1, xpos-2*self.VIEWRANGE, droneNo)
+                                self.moveDown(i+1, xpos - 2*self.VIEWRANGE, droneNo, abs((ypos-remainingMoves)-i))
                                 break
                            else:
                                 self.droneMap[i+1][xpos].remove(droneNo)
-                                self.droneMap[i+1][xpos+1].add(droneNo)
-                                self.dronePositions[droneNo]=[i+1, xpos+1, (1, 1)]
-                                self.updateVision(i+1, xpos+1, droneNo)
-                                self.moveDown(i+1, xpos+1, droneNo, abs((ypos-remainingMoves)-i))
+                                self.droneMap[i+1][xpos+2*self.VIEWRANGE].add(droneNo)
+                                self.dronePositions[droneNo]=[i+1, xpos+2*self.VIEWRANGE, (1, 1)]
+                                self.updateVision(i+1, xpos+2*self.VIEWRANGE, droneNo)
+                                self.moveDown(i+1, xpos+2*self.VIEWRANGE, droneNo, abs((ypos-remainingMoves)-i))
                                 break
                            
  

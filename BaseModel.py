@@ -13,7 +13,7 @@ class WilfireModel():
         np.random.seed(self.seed)
         random.seed(self.seed)
         self.windDirection = random.randrange(0, 8)
-        print("Wind direction: ", self.windDirection)
+        #print("Wind direction: ", self.windDirection)
         # map of likelyhood of spread represented by a spread coefficient
         self.spreadMap = np.array(np.random.rand(self.n, self.m))
         # map of active fire represented by 0 or 1
