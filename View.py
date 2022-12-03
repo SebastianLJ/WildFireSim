@@ -6,11 +6,11 @@ from matplotlib import colors
 import numpy as np
 
 
-n, m, seed = 64, 64, 44
-droneCount = 5
+n, m, seed = 64, 64, 5522
+droneCount = 10
 model = CombustionModel(n, m, seed, False)
 model.WindModel.print_settings()
-prediction_model = CombustionModel(n, m, 22, True, droneCount)
+prediction_model = CombustionModel(n, m, seed, True, droneCount)
 log = Log()
 
 colors_list_fire = [(157/255, 69/255, 49/255), (0, 0, 0, 0), 'brown', (252/255,100/255,0/255)]
