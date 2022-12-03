@@ -10,43 +10,15 @@ class WindModel():
         np.random.seed(self.seed)
         random.seed(self.seed)
         self.windDirection = self.N
-        #self.windSpeed = random.random()
-        self.windSpeed = 0.6
+        self.windSpeed = random.random()
         self.generate_wind_vector()
         print("Wind vector: ", self.wind_vector)
         print("Vector angle: ", self.get_wind_vector_angle())
         print("Wind angle min: ", self.get_wind_angle_min())
         print("Wind angle max: ", self.get_wind_angle_max())
-        print("Wind speed: ", self.windSpeed*30, "m/s")
         print("Normalized Wind speed: ", self.windSpeed)
+        print("Wind speed: ", self.windSpeed*30, "m/s")
 
-    # deprecated
-    def get_direction(self, i,j):
-        if i < 0 and j == 0:
-            return self.S
-        elif i < 0 and j > 0:
-            return self.SW
-        elif i == 0 and j > 0:
-            return self.W
-        elif i > 0 and j > 0:
-            return self.NW
-        elif i > 0 and j == 0:
-            return self.N
-        elif i > 0 and j < 0:
-            return self.NE
-        elif i == 0 and j < 0:
-            return self.E
-        elif i < 0 and j < 0:
-            return self.SE
-        else:
-            return self.NONE
-
-    # depreacted
-    def get_wind_coefficient(self, x, y):
-        if self.windDirection != self.NONE and self.windDirection == self.get_direction(x,y):
-            return self.windSpeed
-        else:
-            return 1
 
     def get_wind_radius(self):
         if self.windSpeed < 0.25:
@@ -54,11 +26,10 @@ class WindModel():
         elif self.windSpeed < 0.5:
             return 2.5
         elif self.windSpeed < 0.75:
-            return 3
-        else:
             return 3.5
+        else:
+            return 4
         
-
     def generate_wind_vector(self):
         a = np.random.uniform(-1, 1)
         b = np.random.uniform(-1, 1)
