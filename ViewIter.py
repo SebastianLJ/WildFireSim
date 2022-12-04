@@ -5,8 +5,8 @@ from matplotlib import animation
 from matplotlib import colors
 import numpy as np
 
-model = CombustionModel(32, 32, 44, False)
-prediction_model = CombustionModel(32, 32, 44, True, 4)
+model = CombustionModel(64, 64, 100, False)
+prediction_model = CombustionModel(64, 64, 100, True, 5)
 log = Log()
 timecap = 5*60*60
 

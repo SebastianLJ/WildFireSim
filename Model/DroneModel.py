@@ -126,7 +126,6 @@ class DroneModel():
                                     self.moveUp(i-1, xpos + 2 * self.VIEWRANGE, droneNo, (ypos+remainingMoves)-i)
                                     break
                                 else:
-                                    print("xpos, ypos: ", xpos, i-1)
                                     self.droneMap[i-1][xpos].remove(droneNo)
                                     self.droneMap[i-1][xpos+2*self.VIEWRANGE].add(droneNo)
                                     self.dronePositions[droneNo]=[i-1,xpos+2*self.VIEWRANGE, (-1,1)]
@@ -134,7 +133,6 @@ class DroneModel():
                                     self.moveUp(i - 1,xpos+2*self.VIEWRANGE, droneNo, (ypos+remainingMoves)-i)
                                     break
                             elif self.dronePositions[droneNo][2] == (1, -1): #direction is (1, -1) go left
-                                print("xpos, ypos: ", xpos, i-1)
                                 self.droneMap[i-1][xpos].remove(droneNo) #remove the drone from the map
                                 self.droneMap[i-1][xpos-2*self.VIEWRANGE].add(droneNo) #place the drone in the new position
                                 self.dronePositions[droneNo] = [i-1, xpos-2*self.VIEWRANGE, (-1,-1)]
