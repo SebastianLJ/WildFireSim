@@ -6,7 +6,7 @@ from matplotlib import colors
 import numpy as np
 
 
-n, m, seed = 64, 64, 100
+n, m, seed = 64, 64, 44
 droneCount = 10
 model = CombustionModel(n, m, seed, False)
 model.WindModel.print_settings()
