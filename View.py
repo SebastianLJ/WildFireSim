@@ -6,8 +6,8 @@ from matplotlib import colors
 import numpy as np
 
 
-n, m, seed = 32, 32, 44
-droneCount = 4
+n, m, seed = 32, 32, 100
+droneCount = 10
 model = CombustionModel(n, m, seed, False)
 model.WindModel.print_settings()
 prediction_model = CombustionModel(n, m, seed, True, droneCount)
@@ -37,7 +37,7 @@ def animate(i):
     animate.X = model.FireModel.fireMap
     print(model.time/60/60)
     if(model.FireModel.isFireDone()):
-        log.write(model.seed, model.n, model.m, prediction_model.droneCount, customName = '_newLog')
+        log.write(model.seed, model.n, model.m, prediction_model.droneCount)
         im.set_data(animate.X)
         anim.event_source.stop()
         print("log successfully written")
@@ -46,7 +46,7 @@ def animate(i):
 # Bind our grid to the identifier X in the animate function's namespace.
 animate.X = model.FireModel.fireMap
 # Interval between frames (ms). 
-interval = 300
+interval = 100
 model.FireModel.start_fire(int(model.n / 2), int(model.m / 2))
 prediction_model.FireModel.start_fire(int(model.n / 2), int(model.m / 2))
 log.add(model.time, model.FireModel.fireMap, prediction_model.FireModel.fireMap)
