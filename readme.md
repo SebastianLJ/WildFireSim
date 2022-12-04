@@ -18,3 +18,5 @@
 3. Run /View/Logger.py
 `python ./View/Logger.py`
 4. Log is outputted to /logs/
+
+Alternatively /View/GenerateLogs.py can be run but it does not plot the spread while running.

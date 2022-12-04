@@ -5,7 +5,7 @@ import numpy as np
 seed = 22
 n = 32
 m = 32
-droneCount = 5
+droneCount = 0
 
 log = Log()
 
