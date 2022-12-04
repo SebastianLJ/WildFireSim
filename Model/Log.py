@@ -32,13 +32,17 @@ class Log():
                 writer.writerow(row)
 
     def get_true_positive(self, fireMap, predictedFireMap):
-        return np.count_nonzero(np.logical_and(fireMap, predictedFireMap))
+        truth_labels = 1
+        return np.count_nonzero(np.logical_and(fireMap == truth_labels, predictedFireMap = truth_labels))
     
     def get_false_positive(self, fireMap, predictedFireMap):
-        return np.count_nonzero(np.logical_and(np.logical_not(fireMap), predictedFireMap))
+        truth_labels = 1
+        return np.count_nonzero(np.logical_and(np.logical_not(fireMap == truth_labels), predictedFireMap == truth_labels))
 
     def get_true_negative(self, fireMap, predictedFireMap):
-        return np.count_nonzero(np.logical_and(np.logical_not(fireMap), np.logical_not(predictedFireMap)))
+        truth_labels = 1
+        return np.count_nonzero(np.logical_and(np.logical_not(fireMap == truth_labels), np.logical_not(predictedFireMap == truth_labels)))
 
     def get_false_negative(self, fireMap, predictedFireMap):
-        return np.count_nonzero(np.logical_and(fireMap, np.logical_not(predictedFireMap)))
+        truth_labels = 1
+        return np.count_nonzero(np.logical_and(fireMap == truth_labels, np.logical_not(predictedFireMap == truth_labels)))
