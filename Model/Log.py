@@ -33,7 +33,7 @@ class Log():
 
     def get_true_positive(self, fireMap, predictedFireMap):
         truth_labels = 1
-        return np.count_nonzero(np.logical_and(fireMap == truth_labels, predictedFireMap = truth_labels))
+        return np.count_nonzero(np.logical_and(fireMap == truth_labels, predictedFireMap == truth_labels))
     
     def get_false_positive(self, fireMap, predictedFireMap):
         truth_labels = 1

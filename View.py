@@ -37,7 +37,7 @@ def animate(i):
     animate.X = model.FireModel.fireMap
     print(model.time/60/60)
     if(model.FireModel.isFireDone()):
-        log.write(model.seed, model.n, model.m, prediction_model.droneCount)
+        log.write(model.seed, model.n, model.m, prediction_model.droneCount, customName = '_newLog')
         im.set_data(animate.X)
         anim.event_source.stop()
         print("log successfully written")
