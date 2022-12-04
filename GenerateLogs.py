@@ -2,10 +2,10 @@ from Model import CombustionModel
 from Model import Log
 import numpy as np
 
-seed = 120
-n = 128
-m = 128
-droneCount = 2
+seed = 22
+n = 32
+m = 32
+droneCount = 5
 
 log = Log()
 

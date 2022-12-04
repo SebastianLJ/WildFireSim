@@ -6,7 +6,7 @@ from matplotlib import colors
 import numpy as np
 
 model = CombustionModel(32, 32, 1, False)
-prediction_model = CombustionModel(32, 32, 1, True, 4)
+prediction_model = CombustionModel(32, 32, 22, True, 5)
 
 log = Log()
 

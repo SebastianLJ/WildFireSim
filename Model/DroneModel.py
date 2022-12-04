@@ -67,13 +67,12 @@ class DroneModel():
                         else:
                             self.noisyMap[i][j]+=0.1
                     else:
-                        if self.noisyMap[i][j]<1.1: self.noisyFireMap[i][j]=1
+                        if self.noisyMap[i][j]<1.1: self.noisyMap[i][j]=1
                         else:
                             self.noisyMap[i][j]-=0.1
  
         self.updateNoisySpreadMap()
         self.updateNoisyFireMap()
-        #print("viewmap: ", self.viewMap)
  
     def updateNoisyFireMap(self):
         #loop through noisyFireMap and multiply noisyMap with firemap
@@ -104,9 +103,6 @@ class DroneModel():
         self.updateNoisyFireMap()
 
 
- 
-        
- 
     def moveDown(self, ypos,  xpos, droneNo, remainingMoves):
         remainingMoves = self.MOVERANGE
         for i in range(ypos+1, ypos+remainingMoves): #move the drone down
@@ -130,13 +126,15 @@ class DroneModel():
                                     self.moveUp(i-1, xpos + 2 * self.VIEWRANGE, droneNo, (ypos+remainingMoves)-i)
                                     break
                                 else:
+                                    print("xpos, ypos: ", xpos, i-1)
                                     self.droneMap[i-1][xpos].remove(droneNo)
-                                    self.droneMap[i-1][self.m-1+self.VIEWRANGE].add(droneNo)
-                                    self.dronePositions[droneNo]=[i-1, self.m-1+self.VIEWRANGE, (1,1)]
-                                    self.updateVision(i-1, self.m-1+self.VIEWRANGE, droneNo)
-                                    self.moveUp(i - 1,self.m-1+self.VIEWRANGE, droneNo, (ypos+remainingMoves)-i)
+                                    self.droneMap[i-1][xpos+2*self.VIEWRANGE].add(droneNo)
+                                    self.dronePositions[droneNo]=[i-1,xpos+2*self.VIEWRANGE, (-1,1)]
+                                    self.updateVision(i-1, xpos+2*self.VIEWRANGE, droneNo)
+                                    self.moveUp(i - 1,xpos+2*self.VIEWRANGE, droneNo, (ypos+remainingMoves)-i)
                                     break
                             elif self.dronePositions[droneNo][2] == (1, -1): #direction is (1, -1) go left
+                                print("xpos, ypos: ", xpos, i-1)
                                 self.droneMap[i-1][xpos].remove(droneNo) #remove the drone from the map
                                 self.droneMap[i-1][xpos-2*self.VIEWRANGE].add(droneNo) #place the drone in the new position
                                 self.dronePositions[droneNo] = [i-1, xpos-2*self.VIEWRANGE, (-1,-1)]
