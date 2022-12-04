@@ -33,6 +33,8 @@ class WindModel():
     def generate_wind_vector(self):
         a = np.random.uniform(-1, 1)
         b = np.random.uniform(-1, 1)
+        self.wind_vector_a=a
+        self.wind_vector_b=b
         self.wind_vector = (a,b)
 
     def get_wind_vector_angle(self):
