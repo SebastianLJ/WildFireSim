@@ -5,10 +5,10 @@ from matplotlib import animation
 from matplotlib import colors
 import numpy as np
 
-model = CombustionModel(128, 128, 120, False)
-prediction_model = CombustionModel(128, 128, 120, True, 5)
+model = CombustionModel(32, 32, 100, False)
+prediction_model = CombustionModel(32, 32, 100, True, 5)
 log = Log()
-timecap = 1*60*60
+timecap = 3*60*60
 
 colors_list_fire = [(157/255, 69/255, 49/255), (0, 0, 0, 0), 'brown', (252/255,100/255,0/255)]
 colors_list_spread = [(156/255, 212/255, 226/255), (138/255, 181/255, 73/255), (95/255, 126/255, 48/255), (186/255, 140/255, 93/255), (41/255, 150/255, 23/255)]

@@ -6,7 +6,7 @@ from matplotlib import colors
 import numpy as np
 
 
-n, m, seed = 64, 64, 5522
+n, m, seed = 32, 32, 100
 droneCount = 0
 model = CombustionModel(n, m, seed, False)
 model.WindModel.print_settings()
@@ -36,7 +36,7 @@ def animate(i):
     log.add(model.time, model.FireModel.fireMap, prediction_model.FireModel.fireMap)
     animate.X = model.FireModel.fireMap
     if(model.FireModel.isFireDone()):
-        log.write(model.seed, model.n, model.m, prediction_model.droneCount, customName='_highnoise')
+        log.write(model.seed, model.n, model.m, prediction_model.droneCount)
         im.set_data(animate.X)
         anim.event_source.stop()
         print("log successfully written")
