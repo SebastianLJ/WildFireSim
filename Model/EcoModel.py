@@ -31,7 +31,7 @@ def generate_perlin_noise_2d(shape, res):
     n1 = n01*(1-t[:,:,0]) + t[:,:,0]*n11
     return np.sqrt(2)*((1-t[:,:,1])*n0 + t[:,:,1]*n1)
         
-def generate_fractal_noise_2d(shape, res, octaves=1000, persistence=0.5):
+def generate_fractal_noise_2d(shape, res, octaves=10, persistence=0.5):
     noise = np.zeros(shape)
     frequency = 1
     amplitude = 1
@@ -112,10 +112,17 @@ class EcoModel():
 
     def plot_terrain(self):
         plt.figure()
+        ax1 = plt.subplot(111)                                # Add a subplot to the current figure.
+        ax1.set_axis_off()
         colors = np.array([[212,241,249], [80, 158, 2], [37, 82, 16], [143, 101, 63], [124, 168, 20]], dtype=np.uint8)
         # print(self.terrainMap)
         self.image = colors[self.terrainMap.reshape(-1)].reshape(self.terrainMap.shape+(3,))
+        x,y = np.meshgrid(np.linspace(0,np.shape(self.image)[1]-1,10),np.linspace(0,np.shape(self.image)[1]-1,10))
+        u = -0.934
+        v = 0.84
         plt.imshow(self.image)
+        plt.quiver(x,y,u,v, pivot="middle",color=(0, 0, 0, 0.4))
+        plt.show()
     
     
     def get_spread_rate(self, i, j):
@@ -145,20 +152,23 @@ class EcoModel():
             return 1
 
 if __name__=="__main__":
-    test_terrain=EcoModel(n=128,m=128,seed=2)
+    test_terrain=EcoModel(n=256,m=256,seed=41)
     test_terrain.generate_terrain()
     test_terrain.plot_terrain()
 
 
     
-    fig4 = plt.figure(facecolor='white')    
-    plt.subplot(131)
-    plt.imshow(test_terrain.noise_map, cmap='terrain')
-    plt.subplot(132)
-    plt.imshow(test_terrain.noise_map_smooth, cmap='terrain')
-    plt.subplot(133)
-    plt.imshow(test_terrain.noise_map2, cmap='terrain')
-    plt.show()
-    
+    # fig4 = plt.figure(facecolor='white')    
 
+    #plt.subplot(131)
+    # plt.imshow(test_terrain.noise_map, cmap='gray')
+    # plt.subplot(132)
+    # plt.imshow(test_terrain.noise_map_smooth, cmap='terrain')
+    # plt.subplot(133)
+    # plt.imshow(test_terrain.noise_map2, cmap='terrain')
     # plt.show()
+    
+    #ax2 = plt.subplot(111)                                # Add a subplot to the current figure.
+    #ax2.set_axis_off()
+
+    

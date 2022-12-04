@@ -112,7 +112,9 @@ def clear_plot(index):
     
 # The animation function: called to produce a frame for each generation.
 def animate(i,im,model,window):
+    
     im.set_data(model.FireModel.fireMap)
+    
     model.spread()
     # animate.X = model.FireModel.fireMap
     time_elapsed = model.time/60/60
@@ -137,8 +139,8 @@ def animate_drones(i,im,dm,model,prediction_model):
 
 
 if __name__=="__main__":
-    n=128
-    m=128
+    n=256
+    m=256
     animation_flag=True
     title1="Real World Model"
     title2="Predicted Model"
@@ -174,8 +176,13 @@ if __name__=="__main__":
                     model = CombustionModel(n, m, selected_seed, False)
                     model.seed=selected_seed
                     im=color_terrain_map(model.EcoModel.terrainMap)
+                    x,y = np.meshgrid(np.linspace(0,n-1,10),np.linspace(0,m-1,10))
+                    # u =model.WindModel.wind_vector_a
+                    # v =-model.WindModel.wind_vector_b
+                    # plt.quiver(x,y,u,v,pivot="middle",color=(0, 0, 0, 0.2))
                     plot_figure(1,im, title=title1)
                     plot_figure(2,im, title=title2)
+                    
                   
             if event == '-SAVE-':
                 print("Saved Simulation to directory: View/")
@@ -194,6 +201,10 @@ if __name__=="__main__":
                     fig.canvas.toolbar_visible=False
                     ax.imshow(model.EcoModel.terrainMap, cmap=cmap_spread, norm=norm_spread)
                     im = ax.imshow(model.FireModel.fireMap, cmap=cmap_fire, norm=norm_fire)  
+                    x,y = np.meshgrid(np.linspace(0,n-1,10),np.linspace(0,m-1,10))
+                    u =model.WindModel.wind_vector_a
+                    v =-model.WindModel.wind_vector_b
+                    plt.quiver(x,y,u,v,pivot="middle",color=(0, 0, 0, 0.2))
                     
                     fig2 = plt.figure(figsize=(25 / 3, 6.25))
                     ax2 = fig2.add_subplot(111)
@@ -210,6 +221,7 @@ if __name__=="__main__":
                     model.FireModel.start_fire(int(model.n / 2)+26, int(model.m / 2)+3)
                     prediction_model.FireModel.start_fire(int(model.n / 3), int(model.m / 3))
                     log.add(model.time, model.FireModel.fireMap, prediction_model.FireModel.fireMap)
+                    fig.show()
                     anim = animation.FuncAnimation(fig, animate, interval=interval, frames=300, fargs=(im,model,window))
                     # anim2 = animation.FuncAnimation(fig2, animate_drones, interval=interval, frames=300, fargs=(im2,dm2,model,prediction_model))
                     
