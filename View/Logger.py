@@ -13,7 +13,7 @@ sys.path.append(parentdir)
 from Model import CombustionModel
 from Model import Log
 
-n, m, seed = 32, 32, 101
+n, m, seed = 32, 32, 100
 droneCount = 0
 model = CombustionModel(n, m, seed, False)
 model.WindModel.print_settings()
