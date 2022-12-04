@@ -1,13 +1,20 @@
-from Model import CombustionModel
-from Model import Log
 import matplotlib.pyplot as plt
 from matplotlib import animation
 from matplotlib import colors
 import numpy as np
+# path
+import sys
+import os
+currentdir = os.path.dirname(os.path.realpath(__file__))
+parentdir = os.path.dirname(currentdir)
+sys.path.append(parentdir)
 
+# Module
+from Model import CombustionModel
+from Model import Log
 
-n, m, seed = 64, 64, 100
-droneCount = 10
+n, m, seed = 32, 32, 100
+droneCount = 0
 model = CombustionModel(n, m, seed, False)
 model.WindModel.print_settings()
 prediction_model = CombustionModel(n, m, seed, True, droneCount)
@@ -48,6 +55,8 @@ animate.X = model.FireModel.fireMap
 interval = 100
 model.FireModel.start_fire(int(model.n / 2), int(model.m / 2))
 prediction_model.FireModel.start_fire(int(model.n / 2), int(model.m / 2))
+model.FireModel.start_fire(int(model.n / 2)+10, int(model.m / 2)+11)
+prediction_model.FireModel.start_fire(int(model.n / 2)+10, int(model.m / 2)+11)
 log.add(model.time, model.FireModel.fireMap, prediction_model.FireModel.fireMap)
 anim = animation.FuncAnimation(fig, animate, interval=interval, frames=300)
 # anim.save("forest_fire.mp4")
