@@ -6,8 +6,8 @@ from matplotlib import colors
 import numpy as np
 
 
-n, m, seed = 32, 32, 100
-droneCount = 0
+n, m, seed = 64, 64, 100
+droneCount = 10
 model = CombustionModel(n, m, seed, False)
 model.WindModel.print_settings()
 prediction_model = CombustionModel(n, m, seed, True, droneCount)
