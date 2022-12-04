@@ -2,7 +2,7 @@
 
 ## How to run
 1. Install required packages
-`python -m pip install numpy scipy matplotlib`
+`python -m pip install numpy scipy matplotlib PySimpleGUI`
 2. Run /View/View.py
 `python ./View/View.py`
 3. Input seed
