@@ -23,8 +23,8 @@ class Log():
         specificity = tn / (tn + fp)
         self.log.append([int(time), fireArea, predictedFireArea, accuracy, sensitivity, specificity])
     
-    def write(self, seed, n, m, droneCount):
-        filename = 'log_' + str(seed) + '_' + str(n) + '_' + str(m) + '_' + str(droneCount) + '.csv'
+    def write(self, seed, n, m, droneCount, customName = ''):
+        filename = 'log_' + str(seed) + '_' + str(n) + '_' + str(m) + '_' + str(droneCount) + customName + '.csv'
         with open("logs/"+filename, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
             writer.writerow(self.header)

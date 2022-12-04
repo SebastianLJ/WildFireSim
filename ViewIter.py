@@ -5,10 +5,10 @@ from matplotlib import animation
 from matplotlib import colors
 import numpy as np
 
-model = CombustionModel(128, 128, 120, False)
-prediction_model = CombustionModel(128, 128, 120, True, 5)
+model = CombustionModel(32, 32, 44, False)
+prediction_model = CombustionModel(32, 32, 44, True, 4)
 log = Log()
-timecap = 1*60*60
+timecap = 5*60*60
 
 colors_list_fire = [(157/255, 69/255, 49/255), (0, 0, 0, 0), 'brown', (252/255,100/255,0/255)]
 colors_list_spread = [(156/255, 212/255, 226/255), (138/255, 181/255, 73/255), (95/255, 126/255, 48/255), (186/255, 140/255, 93/255), (41/255, 150/255, 23/255)]
@@ -43,9 +43,9 @@ def animate(i):
 # Bind our grid to the identifier X in the animate function's namespace.
 animate.X = model.FireModel.fireMap
 # Interval between frames (ms). 
-interval = 100
-model.FireModel.start_fire(int(model.n / 2)+3, int(model.m / 2)+3)
-prediction_model.FireModel.start_fire(int(model.n / 2)+3, int(model.m / 2)+3)
+interval = 300
+model.FireModel.start_fire(int(model.n / 2), int(model.m / 2))
+prediction_model.FireModel.start_fire(int(model.n / 2), int(model.m / 2))
 log.add(model.time, model.FireModel.fireMap, prediction_model.FireModel.fireMap)
 anim = animation.FuncAnimation(fig, animate, interval=interval, frames=300)
 # anim.save("forest_fire.mp4")

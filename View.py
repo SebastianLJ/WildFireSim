@@ -6,8 +6,8 @@ from matplotlib import colors
 import numpy as np
 
 
-n, m, seed = 64, 64, 5522
-droneCount = 10
+n, m, seed = 32, 32, 44
+droneCount = 4
 model = CombustionModel(n, m, seed, False)
 model.WindModel.print_settings()
 prediction_model = CombustionModel(n, m, seed, True, droneCount)
@@ -28,7 +28,6 @@ ax.set_axis_off()
 ax.imshow(model.EcoModel.terrainMap, cmap=cmap_spread, norm=norm_spread)
 im = ax.imshow(model.FireModel.fireMap, cmap=cmap_fire, norm=norm_fire)  # , interpolation='nearest')
 
-
 # The animation function: called to produce a frame for each generation.
 def animate(i):
     im.set_data(animate.X)
@@ -36,6 +35,7 @@ def animate(i):
     prediction_model.spread(model.spreadMap)
     log.add(model.time, model.FireModel.fireMap, prediction_model.FireModel.fireMap)
     animate.X = model.FireModel.fireMap
+    print(model.time/60/60)
     if(model.FireModel.isFireDone()):
         log.write(model.seed, model.n, model.m, prediction_model.droneCount)
         im.set_data(animate.X)
@@ -46,9 +46,9 @@ def animate(i):
 # Bind our grid to the identifier X in the animate function's namespace.
 animate.X = model.FireModel.fireMap
 # Interval between frames (ms). 
-interval = 100
-model.FireModel.start_fire(int(model.n / 2)+3, int(model.m / 2)+3)
-prediction_model.FireModel.start_fire(int(model.n / 2)+3, int(model.m / 2)+3)
+interval = 300
+model.FireModel.start_fire(int(model.n / 2), int(model.m / 2))
+prediction_model.FireModel.start_fire(int(model.n / 2), int(model.m / 2))
 log.add(model.time, model.FireModel.fireMap, prediction_model.FireModel.fireMap)
 anim = animation.FuncAnimation(fig, animate, interval=interval, frames=300)
 # anim.save("forest_fire.mp4")
