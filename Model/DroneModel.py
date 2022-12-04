@@ -32,12 +32,12 @@ class DroneModel():
         if(self.droneNumber > 0):
             for j in range(1, self.droneNumber+1): #for each drone place it in a random position
                 startingPosition = random.randint(0, self.m-1)
-                self.droneMap[0][startingPosition].add(j)
-                self.dronePositions[j] = [0, startingPosition, (1,1)]
+                self.droneMap[63][startingPosition].add(j)
+                self.dronePositions[j] = [63, startingPosition, (1,1)]
         #set noisyspreadmapm noisyfiremap equal to spreadmap, firemap but with noise
         for i in range(0,self.n):
             for j in range(0,self.m):
-                self.noisyMap[i][j] = np.random.uniform(0, 1.5)
+                self.noisyMap[i][j] = np.random.uniform(0.5, 1)
         #loop through noisySpreadMap and multiply noisyMap with spreadmap
         for i in range(0,self.n):
             for j in range(0,self.m):

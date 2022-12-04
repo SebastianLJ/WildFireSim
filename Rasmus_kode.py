@@ -5,8 +5,11 @@ from matplotlib import animation
 from matplotlib import colors
 import numpy as np
 
-model = CombustionModel(32, 32, 1, False)
-prediction_model = CombustionModel(32, 32, 22, True, 5)
+n=64
+selected_seed=44
+
+model = CombustionModel(n, n, selected_seed, False)
+prediction_model = CombustionModel(n, n, selected_seed, True, 3)
 
 log = Log()
 
@@ -26,7 +29,7 @@ norm_drone = colors.BoundaryNorm(bounds_drone, cmap_drone.N)
 fig = plt.figure(figsize=(25 / 3, 6.25))
 ax = fig.add_subplot(111)
 ax.set_axis_off()
-ax.imshow(model.EcoModel.terrainMap, cmap=cmap_spread, norm=norm_spread)
+ax.imshow(prediction_model.EcoModel.terrainMap, cmap=cmap_spread, norm=norm_spread)
 im = ax.imshow(model.FireModel.fireMap, cmap=cmap_fire, norm=norm_fire)
 dm = ax.imshow(prediction_model.DroneModel.viewMap, cmap=cmap_drone, norm=norm_drone, alpha=0.70)  # , interpolation='nearest')
 
@@ -37,7 +40,7 @@ def animate(i):
     model.spread()
     prediction_model.spread(model.spreadMap)
     log.add(model.time, model.FireModel.fireMap, prediction_model.FireModel.fireMap)
-    animate.X = model.FireModel.fireMap
+    animate.X = prediction_model.FireModel.fireMap
     animate.Y = prediction_model.DroneModel.viewMap
     #print(model.time/60/60)
     if(model.FireModel.isFireDone()):
@@ -51,8 +54,8 @@ animate.X = model.FireModel.fireMap
 animate.Y = prediction_model.DroneModel.viewMap
 # Interval between frames (ms). 
 interval = 1
-model.FireModel.start_fire(int(model.n / 2)+3, int(model.m / 2)+3)
-prediction_model.FireModel.start_fire(int(model.n / 2)+3, int(model.m / 2)+3)
+model.FireModel.start_fire(int(model.n / 2)+26, int(model.m / 2)+3)
+prediction_model.FireModel.start_fire(int(model.n / 2)+26, int(model.m / 2)+3)
 log.add(model.time, model.FireModel.fireMap, prediction_model.FireModel.fireMap)
 anim = animation.FuncAnimation(fig, animate, interval=interval, frames=300)
 # anim.save("forest_fire.mp4")
