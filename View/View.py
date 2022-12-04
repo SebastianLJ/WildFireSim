@@ -78,7 +78,6 @@ def create_window():
     return created_window
 
 
-
 def color_terrain_map(terrain_map):
         # Water , Grass , Tree , Ground , Shrub
         colors = np.array([[156,212,226], [80, 158, 2], [37, 82, 16], [143, 101, 63], [124, 168, 20]], dtype=np.uint8)
@@ -120,6 +119,8 @@ def animate(i,im,model,window):
     time_elapsed = model.time/60/60
     window["-TIME-"].update(round(time_elapsed,2))
     window["-WINDSPEED-"].update(round(model.WindModel.windSpeed*30,2))
+    
+  
 
     
 
@@ -139,8 +140,8 @@ def animate_drones(i,im,dm,model,prediction_model):
 
 
 if __name__=="__main__":
-    n=256
-    m=256
+    n=128
+    m=128
     animation_flag=True
     title1="Real World Model"
     title2="Predicted Model"
@@ -177,9 +178,10 @@ if __name__=="__main__":
                     model.seed=selected_seed
                     im=color_terrain_map(model.EcoModel.terrainMap)
                     x,y = np.meshgrid(np.linspace(0,n-1,10),np.linspace(0,m-1,10))
-                    # u =model.WindModel.wind_vector_a
-                    # v =-model.WindModel.wind_vector_b
-                    # plt.quiver(x,y,u,v,pivot="middle",color=(0, 0, 0, 0.2))
+                    u =model.WindModel.wind_vector_a
+                    v =-model.WindModel.wind_vector_b
+                    fig = plt.figure(1,facecolor=0.7)
+                    plt.quiver(x,y,u,v,pivot="middle",color=(0, 0, 0, 0.2))
                     plot_figure(1,im, title=title1)
                     plot_figure(2,im, title=title2)
                     
@@ -206,12 +208,12 @@ if __name__=="__main__":
                     v =-model.WindModel.wind_vector_b
                     plt.quiver(x,y,u,v,pivot="middle",color=(0, 0, 0, 0.2))
                     
-                    fig2 = plt.figure(figsize=(25 / 3, 6.25))
-                    ax2 = fig2.add_subplot(111)
-                    ax2.set_axis_off()
-                    ax2.imshow(model.EcoModel.terrainMap, cmap=cmap_spread, norm=norm_spread)
-                    im2 = ax.imshow(model.FireModel.fireMap, cmap=cmap_fire, norm=norm_fire)
-                    dm2 = ax.imshow(prediction_model.DroneModel.viewMap, cmap=cmap_drone, norm=norm_drone, alpha=0.70)
+                    # fig2 = plt.figure(figsize=(25 / 3, 6.25))
+                    # ax2 = fig2.add_subplot(111)
+                    # ax2.set_axis_off()
+                    # ax2.imshow(model.EcoModel.terrainMap, cmap=cmap_spread, norm=norm_spread)
+                    # im2 = ax.imshow(model.FireModel.fireMap, cmap=cmap_fire, norm=norm_fire)
+                    # dm2 = ax.imshow(prediction_model.DroneModel.viewMap, cmap=cmap_drone, norm=norm_drone, alpha=0.70)
 
                     # Bind our grid to the identifier X in the animate function's namespace.
                     animate.X = model.FireModel.fireMap
@@ -221,7 +223,7 @@ if __name__=="__main__":
                     model.FireModel.start_fire(int(model.n / 2)+26, int(model.m / 2)+3)
                     prediction_model.FireModel.start_fire(int(model.n / 3), int(model.m / 3))
                     log.add(model.time, model.FireModel.fireMap, prediction_model.FireModel.fireMap)
-                    fig.show()
+                    
                     anim = animation.FuncAnimation(fig, animate, interval=interval, frames=300, fargs=(im,model,window))
                     # anim2 = animation.FuncAnimation(fig2, animate_drones, interval=interval, frames=300, fargs=(im2,dm2,model,prediction_model))
                     
