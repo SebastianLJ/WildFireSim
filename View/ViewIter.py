@@ -1,12 +1,21 @@
-from Model import CombustionModel
-from Model import Log
 import matplotlib.pyplot as plt
 from matplotlib import animation
 from matplotlib import colors
 import numpy as np
+# path
+import sys
+import os
+currentdir = os.path.dirname(os.path.realpath(__file__))
+parentdir = os.path.dirname(currentdir)
+sys.path.append(parentdir)
 
-model = CombustionModel(64, 64, 44, False)
-prediction_model = CombustionModel(64, 64, 44, True, 0)
+# Module
+from Model import CombustionModel
+from Model import Log
+
+
+model = CombustionModel(64, 64, 100, False)
+prediction_model = CombustionModel(64, 64, 100, True, 5)
 log = Log()
 timecap = 5*60*60
 
@@ -35,7 +44,7 @@ def animate(i):
     animate.X = prediction_model.FireModel.fireMap
     print(model.time/60/60)
     if(model.FireModel.isFireDone() or model.time >= timecap):
-        #log.write(model.seed, model.n, model.m, prediction_model.droneCount)
+        #log.write(model.seed, model.n, model.m, prediction_model.droneCount) 
         im.set_data(animate.X)
         anim.event_source.stop()
 
