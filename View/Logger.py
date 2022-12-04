@@ -55,6 +55,8 @@ animate.X = model.FireModel.fireMap
 interval = 100
 model.FireModel.start_fire(int(model.n / 2), int(model.m / 2))
 prediction_model.FireModel.start_fire(int(model.n / 2), int(model.m / 2))
+model.FireModel.start_fire(int(model.n / 2)+10, int(model.m / 2)+11)
+prediction_model.FireModel.start_fire(int(model.n / 2)+10, int(model.m / 2)+11)
 log.add(model.time, model.FireModel.fireMap, prediction_model.FireModel.fireMap)
 anim = animation.FuncAnimation(fig, animate, interval=interval, frames=300)
 # anim.save("forest_fire.mp4")
