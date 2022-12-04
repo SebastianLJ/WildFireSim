@@ -19,7 +19,10 @@ class Log():
         tn = self.get_true_negative(fireMap, predictedFireMap)
         fn = self.get_false_negative(fireMap, predictedFireMap)
         accuracy = (tp + tn) / (tp + fp + tn + fn)
-        sensitivity = tp / (tp + fn)
+        try:
+            sensitivity = tp / (tp + fn)
+        except ZeroDivisionError:
+            sensitivity = 1.0
         specificity = tn / (tn + fp)
         self.log.append([int(time), fireArea, predictedFireArea, accuracy, sensitivity, specificity])
     
