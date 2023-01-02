@@ -15,9 +15,9 @@ from Model import Log
 
 n=64
 m=64
-selected_seed=100
+selected_seed=44
 model = CombustionModel(n, m, selected_seed, False)
-prediction_model = CombustionModel(n, m, selected_seed, True, 20)
+prediction_model = CombustionModel(n, m, selected_seed, True, 5)
 log = Log()
 timecap = 0.5*60*60
 
@@ -47,31 +47,31 @@ v =-model.WindModel.wind_vector_b
 plt.quiver(x,y,u,v,pivot="middle",color=(0, 0, 0, 0.2))
 
 # The animation function: called to produce a frame for each generation.
-# def animate(i):
-#     im.set_data(animate.X)
-#     model.spread()
-#     prediction_model.spread(model.spreadMap)
-#     log.add(model.time, model.FireModel.fireMap, prediction_model.FireModel.fireMap)
-#     animate.X = model.FireModel.fireMap
-#     print(model.time/60/60)
-#     if(model.FireModel.isFireDone() or model.time >= timecap):
-#         #log.write(model.seed, model.n, model.m, prediction_model.droneCount)
-#         im.set_data(animate.X)
-#         anim.event_source.stop()
-
 def animate(i):
     im.set_data(animate.X)
-    dm.set_data(animate.Y)
     model.spread()
     prediction_model.spread(model.spreadMap)
     log.add(model.time, model.FireModel.fireMap, prediction_model.FireModel.fireMap)
-    animate.X = prediction_model.FireModel.fireMap
-    animate.Y = prediction_model.DroneModel.viewMap
-    #print(model.time/60/60)
+    animate.X = model.FireModel.fireMap
+    print(model.time/60/60)
     if(model.FireModel.isFireDone() or model.time >= timecap):
-        #log.write(model.seed, model.n, model.m, prediction_model.droneCount) 
+        #log.write(model.seed, model.n, model.m, prediction_model.droneCount)
         im.set_data(animate.X)
         anim.event_source.stop()
+
+# def animate(i):
+#     im.set_data(animate.X)
+#     dm.set_data(animate.Y)
+#     model.spread()
+#     prediction_model.spread(model.spreadMap)
+#     log.add(model.time, model.FireModel.fireMap, prediction_model.FireModel.fireMap)
+#     animate.X = prediction_model.FireModel.fireMap
+#     animate.Y = prediction_model.DroneModel.viewMap
+#     #print(model.time/60/60)
+#     if(model.FireModel.isFireDone() or model.time >= timecap):
+#         #log.write(model.seed, model.n, model.m, prediction_model.droneCount) 
+#         im.set_data(animate.X)
+#         anim.event_source.stop()
 
 # Bind our grid to the identifier X in the animate function's namespace.
 animate.X = model.FireModel.fireMap

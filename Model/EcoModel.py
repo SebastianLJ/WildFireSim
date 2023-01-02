@@ -121,8 +121,8 @@ class EcoModel():
         u = -0.934
         v = 0.84
         plt.imshow(self.image)
-        plt.quiver(x,y,u,v, pivot="middle",color=(0, 0, 0, 0.4))
-        plt.show()
+        #plt.quiver(x,y,u,v, pivot="middle",color=(0, 0, 0, 0.4))
+        #plt.show()
     
     
     def get_spread_rate(self, i, j):
@@ -152,16 +152,18 @@ class EcoModel():
             return 1
 
 if __name__=="__main__":
-    test_terrain=EcoModel(n=256,m=256,seed=41)
+    test_terrain=EcoModel(n=256,m=256,seed=44)
     test_terrain.generate_terrain()
     test_terrain.plot_terrain()
 
 
     
-    # fig4 = plt.figure(facecolor='white')    
+    fig4 = plt.figure(facecolor='white')    
 
-    #plt.subplot(131)
-    # plt.imshow(test_terrain.noise_map, cmap='gray')
+    plt.plot()
+    ax1 = plt.subplot(111)                                # Add a subplot to the current figure.
+    ax1.set_axis_off()
+    plt.imshow(test_terrain.noise_map, cmap='gray')
     # plt.subplot(132)
     # plt.imshow(test_terrain.noise_map_smooth, cmap='terrain')
     # plt.subplot(133)
@@ -171,4 +173,4 @@ if __name__=="__main__":
     #ax2 = plt.subplot(111)                                # Add a subplot to the current figure.
     #ax2.set_axis_off()
 
-    
+    plt.show()

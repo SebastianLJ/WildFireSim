@@ -9,6 +9,8 @@ from matplotlib import animation
 from matplotlib import colors
 import threading
 import time
+import matplotlib as mpl
+mpl.rcParams['toolbar'] = 'None'
 
 # path
 import sys
@@ -48,29 +50,45 @@ def create_window():
                 [sg.Text('Ground'),sg.Button(size=(2,1),button_color="#8f6542")],
     ]
 
-    left_col = [[sg.Text('Seed'),sg.Input(key='-SEED-'),sg.Button('Generate Bio',key='-GENERATE-',enable_events=True)],
-                [sg.Canvas(key='-Graph1-')], 
-                [sg.Button('Reset',pad=((2,0),(5,0)),enable_events=True,key='-RESET-'),
-                 sg.Button('Save Simulation',pad=((2,0),(5,0)),enable_events=True,key='-SAVE-')]]
+    #left_col = [[sg.Text('Seed'),sg.Input(key='-SEED-'),sg.Button('Generate Bio',key='-GENERATE-',enable_events=True)],
+    #            [sg.Canvas(key='-Graph1-')], 
+    #           [sg.Button('Reset',pad=((2,0),(5,0)),enable_events=True,key='-RESET-'),
+    #             sg.Button('Save Simulation',pad=((2,0),(5,0)),enable_events=True,key='-SAVE-')]]
     
+    left_col2 = [[sg.Text('Seed'),sg.Input(key='-SEED-',default_text="0"),sg.Button('Generate Bio',key='-GENERATE-',enable_events=True)],
+            [sg.Canvas(key='-Graph1-')], 
+            [sg.Button('Reset',pad=((2,0),(5,0)),enable_events=True,key='-RESET-'),
+                sg.Button('Save Simulation',pad=((2,0),(5,0)),enable_events=True,key='-SAVE-'),
+                sg.Button('Start',pad=((2,0),(5,0)),button_color='white on green',enable_events=True,key='-START-'), 
+                sg.Button('Stop',pad=((2,0),(5,0)),button_color='white on red',key='-STOP-'),
+                sg.Button('Exit',pad=((2,0),(5,0)),enable_events=True,key="-EXIT-")],   
+                ]
+
+
     right_col = [[sg.Button('Start',button_color='white on green',enable_events=True,key='-START-'), 
                     sg.Button('Stop',button_color='white on red',key='-STOP-'),],
                     [sg.Canvas(key='-Graph2-')],
                     [sg.Button('Exit',pad=((2,0),(5,0)),enable_events=True,key="-EXIT-"),
                 ]] 
     stat_col = [[sg.Text('Windspeed'),sg.Text('',key='-WINDSPEED-',text_color='black',background_color='white'), sg.Text("m/s")],
-                [sg.Text('Wind Direction:'),sg.Text('',key='-WINDDIR-')],
-                [sg.Text('Time Elapsed:'),sg.Text('',key='-TIME-',text_color='black',background_color='white'),sg.Text('hours')],
+                [sg.Text('Time Elapsed:'),sg.Text('',key='-TIME-',text_color='black',background_color='white',),sg.Text('hours')],
+                [sg.Text('Number of Drones'),sg.Input(key='-DRONES-',size=(5,2),default_text="0")],
+                [sg.Text('Fire start pos'),sg.Input(key='-FIRESTART-',size=(5,3),default_text="0,0")]
                 ]
 
-    layout = [[sg.Column(legend_col,element_justification='r'),
-               sg.Column(left_col,element_justification='c'),
+    # layout = [[sg.Column(legend_col,element_justification='r'),
+    #          sg.Column(left_col,element_justification='c'),
+    #          sg.VSeperator(),
+    #          sg.Column(right_col,element_justification='c'),
+    #          sg.Column(stat_col,element_justification='l')],
+    #       ]#
+    layout2 = [[sg.Column(legend_col,element_justification='r'),
+               sg.Column(left_col2,element_justification='c'),
                sg.VSeperator(),
-               sg.Column(right_col,element_justification='c'),
                sg.Column(stat_col,element_justification='l')],
             ]
     created_window = sg.Window('Fire Simulation',
-                                layout,
+                                layout2,
                                 finalize=True,
                                 resizable=True,
                                 icon="fire_logo.ico",
@@ -91,13 +109,17 @@ def pack_figure(graph, figure):
     
     return plot_widget
 
-def plot_figure(index, image,title):
+def plot_figure(index, image,title,model):
     fig = plt.figure(index,facecolor=0.7)         # Active an existing figure
     ax = plt.gca()                  # Get the current axes
     ax.cla()                        # Clear the current axes
     ax.set_axis_off()
     ax.set_title(title,loc='center')
     plt.imshow(image)
+    x,y = np.meshgrid(np.linspace(0,n-1,10),np.linspace(0,m-1,10))
+    u =model.WindModel.wind_vector_a
+    v =-model.WindModel.wind_vector_b
+    plt.quiver(x,y,u,v,pivot="middle",color=(0, 0, 0, 0.2))
     fig.tight_layout()
     fig.canvas.draw()    
 
@@ -111,39 +133,39 @@ def clear_plot(index):
     
 # The animation function: called to produce a frame for each generation.
 def animate(i,im,model,window):
-    
+    # animate.X = model.FireModel.fireMap
     im.set_data(model.FireModel.fireMap)
-    
     model.spread()
     # animate.X = model.FireModel.fireMap
     time_elapsed = model.time/60/60
     window["-TIME-"].update(round(time_elapsed,2))
     window["-WINDSPEED-"].update(round(model.WindModel.windSpeed*30,2))
     
+    return im
   
-
-    
-
-def animate_drones(i,im,dm,model,prediction_model):
+def animate2(i,im,dm,model1,pmodel):
     im.set_data(animate.X)
     dm.set_data(animate.Y)
-    model.spread()
-    prediction_model.spread(model.spreadMap)
-    log.add(model.time, model.FireModel.fireMap, prediction_model.FireModel.fireMap)
-    animate.X = model.FireModel.fireMap
-    animate.Y = prediction_model.DroneModel.viewMap
+    model1.spread()
+    pmodel.spread(model1.spreadMap)
+   # log.add(model.time, model.FireModel.fireMap, prediction_model.FireModel.fireMap)
+    animate.X = pmodel.FireModel.fireMap
+    animate.Y = pmodel.DroneModel.viewMap
     
-    if(model.FireModel.isFireDone()):
-        log.write(model.seed, model.n, model.m, prediction_model.droneCount)
-        im.set_data(animate.X)
+    return im
+   # if(model.FireModel.isFireDone()):
+   #     log.write(model.seed, model.n, model.m, prediction_model.droneCount)
+   #     im.set_data(animate.X)
         #anim.event_source.stop()
 
 
 if __name__=="__main__":
-    n=128
-    m=128
+    n=64
+    m=64
+    n_drones=5
     animation_flag=True
-    title1="Real World Model"
+    #title1="Real World Model"
+    title1="Generated EcoSystem"
     title2="Predicted Model"
     # Generate window
     window = create_window()
@@ -151,18 +173,18 @@ if __name__=="__main__":
     simulation_start=False
     # Initial graphs
     graph1 = window['-Graph1-']
-    graph2 = window['-Graph2-']
+    #graph2 = window['-Graph2-']
     plt.ioff()                                            # Turn the interactive mode off
     fig1 = plt.figure(1,facecolor='white')                # Create a new figure
     ax1 = plt.subplot(111)                                # Add a subplot to the current figure.
     ax1.set_title(title1,loc='center')
     ax1.set_axis_off()
-    fig2 = plt.figure(2,facecolor='white')                # Create a new figure
-    ax2 = plt.subplot(111)                                # Add a subplot to the current figure.
-    ax2.set_title(title2,loc='center')
-    ax2.set_axis_off()
+    #fig2 = plt.figure(2,facecolor='white')                # Create a new figure
+    #ax2 = plt.subplot(111)                                # Add a subplot to the current figure.
+    #ax2.set_title(title2,loc='center')
+    #ax2.set_axis_off()
     pack_figure(graph1, fig1)                             # Pack figure under graph
-    pack_figure(graph2, fig2)
+    #pack_figure(graph2, fig2)
     
 
      # MAIN LOOP
@@ -176,14 +198,18 @@ if __name__=="__main__":
                     selected_seed=int(values['-SEED-'])
                     model = CombustionModel(n, m, selected_seed, False)
                     model.seed=selected_seed
+                    model2 = CombustionModel(n,m, selected_seed, False)
+                    model2.seed=selected_seed
                     im=color_terrain_map(model.EcoModel.terrainMap)
-                    x,y = np.meshgrid(np.linspace(0,n-1,10),np.linspace(0,m-1,10))
-                    u =model.WindModel.wind_vector_a
-                    v =-model.WindModel.wind_vector_b
+                    im2=color_terrain_map(model2.EcoModel.terrainMap)
+                    n_drones=int(values['-DRONES-'])
+                    f_pos = str(values['-FIRESTART-'])
+                    f_start_x, f_start_y = f_pos.split(',')
+                    f_start_x=int(f_start_x)
+                    f_start_y=int(f_start_y)
                     fig = plt.figure(1,facecolor=0.7)
-                    plt.quiver(x,y,u,v,pivot="middle",color=(0, 0, 0, 0.2))
-                    plot_figure(1,im, title=title1)
-                    plot_figure(2,im, title=title2)
+                    plot_figure(1,im, title=title1,model=model)
+                    #plot_figure(2,im, title=title2,model=model)
                     
                   
             if event == '-SAVE-':
@@ -193,42 +219,62 @@ if __name__=="__main__":
             if event == '-START-':
                 if generated_flag:
                     simulation_start=True
-                    # model = CombustionModel(n, m, selected_seed, False)
-                    prediction_model = CombustionModel(n, m, selected_seed, True, 4)
+                    n_drones=int(values['-DRONES-'])
+                    f_pos = str(values['-FIRESTART-'])
+                    f_start_x, f_start_y = f_pos.split(',')
+                    f_start_x=int(f_start_x)
+                    f_start_y=int(f_start_y)
+                    # model = CombustionModel(n, m, selected_seed, False)¨
+                    model = CombustionModel(n, m, selected_seed, False)
+                    model.seed=selected_seed
+                    model2 = CombustionModel(n,m, selected_seed, False)
+                    model2.seed=selected_seed
+                    im=color_terrain_map(model.EcoModel.terrainMap)
+                    im2=color_terrain_map(model2.EcoModel.terrainMap)
+                    prediction_model = CombustionModel(n, m, selected_seed, True, n_drones)
                     log = Log()
-                    fig = plt.figure(figsize=(25 / 3, 6.25))
-                    ax = fig.add_subplot(111)
-                    ax.set_axis_off()
+                    # fig = plt.figure(figsize=(25 / 3, 6.25))
+                    fig, (ax1, ax2) = plt.subplots(1, 2)
+                    fig.canvas.set_window_title(f"Real World vs Drone Model using {n_drones} drones")
+                    
+                    # ax = fig.add_subplot(111)
+                    fig.set_size_inches(10,5,forward=True)
+                    ax1.set_axis_off()
+                    ax2.set_axis_off()
+                    
+                    ax1.axis('off')
+                    ax2.axis('off')
                     fig.tight_layout()
                     fig.canvas.toolbar_visible=False
-                    ax.imshow(model.EcoModel.terrainMap, cmap=cmap_spread, norm=norm_spread)
-                    im = ax.imshow(model.FireModel.fireMap, cmap=cmap_fire, norm=norm_fire)  
+
+                    ax1.imshow(model.EcoModel.terrainMap, cmap=cmap_spread, norm=norm_spread)
+                    ax2.imshow(prediction_model.EcoModel.terrainMap, cmap=cmap_spread, norm=norm_spread)
+                    im1 = ax1.imshow(model.FireModel.fireMap, cmap=cmap_fire, norm=norm_fire)  
+                    
+                    im2 = ax2.imshow(prediction_model.FireModel.fireMap,cmap=cmap_fire, norm=norm_fire)
+                    dm = ax2.imshow(prediction_model.DroneModel.viewMap, cmap=cmap_drone, norm=norm_drone, alpha=0.70)  # , interpolation='nearest')
+
                     x,y = np.meshgrid(np.linspace(0,n-1,10),np.linspace(0,m-1,10))
                     u =model.WindModel.wind_vector_a
                     v =-model.WindModel.wind_vector_b
-                    plt.quiver(x,y,u,v,pivot="middle",color=(0, 0, 0, 0.2))
-                    
-                    # fig2 = plt.figure(figsize=(25 / 3, 6.25))
-                    # ax2 = fig2.add_subplot(111)
-                    # ax2.set_axis_off()
-                    # ax2.imshow(model.EcoModel.terrainMap, cmap=cmap_spread, norm=norm_spread)
-                    # im2 = ax.imshow(model.FireModel.fireMap, cmap=cmap_fire, norm=norm_fire)
-                    # dm2 = ax.imshow(prediction_model.DroneModel.viewMap, cmap=cmap_drone, norm=norm_drone, alpha=0.70)
-
+                    ax1.quiver(x,y,u,v,pivot="middle",color=(0, 0, 0, 0.2))
+                    ax2.quiver(x,y,u,v,pivot="middle",color=(0,0,0,0.2))
                     # Bind our grid to the identifier X in the animate function's namespace.
-                    animate.X = model.FireModel.fireMap
+                    animate.X = model2.FireModel.fireMap
                     animate.Y = prediction_model.DroneModel.viewMap
                     # Interval between frames (ms). 
-                    interval = 100
-                    model.FireModel.start_fire(int(model.n / 2)+26, int(model.m / 2)+3)
-                    prediction_model.FireModel.start_fire(int(model.n / 3), int(model.m / 3))
-                    log.add(model.time, model.FireModel.fireMap, prediction_model.FireModel.fireMap)
+                    interval = 300
+                    model.FireModel.start_fire(f_start_x, f_start_y)
+                    model2.FireModel.start_fire(f_start_x, f_start_y)
+                    prediction_model.FireModel.start_fire(f_start_x, f_start_y)
+                    #log.add(model.time, model.FireModel.fireMap, prediction_model.FireModel.fireMap)
                     
-                    anim = animation.FuncAnimation(fig, animate, interval=interval, frames=300, fargs=(im,model,window))
+                    anim = animation.FuncAnimation(fig, animate, interval=interval, frames=300, fargs=(im1,model,window))
+                    anim2 = animation.FuncAnimation(fig,animate2,interval=interval,frames=300, fargs=(im2,dm,model2,prediction_model))
                     # anim2 = animation.FuncAnimation(fig2, animate_drones, interval=interval, frames=300, fargs=(im2,dm2,model,prediction_model))
                     
                     fig.show()     
-                    # fig2.show()   
+                     
                                
 
                 print("Simulation Started")
